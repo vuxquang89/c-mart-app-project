@@ -11,22 +11,31 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.example.cmart.app.entity.CustomerEntity;
+import com.example.cmart.app.jwt.JwtTokenFilter;
 import com.example.cmart.app.oauth.CustomOAuth2UserService;
+import com.example.cmart.app.service.CustomerService;
 
 @EnableWebSecurity
-/*
 @EnableGlobalMethodSecurity(
 		prePostEnabled = false,
 		securedEnabled = false,
 		jsr250Enabled = true //cho phep sử dụng chú thích @RolesAllowed trong mã API 
 								//để duoc ủy quyền cấp phương thức
 )
-*/
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 
+	@Autowired
+	private JwtTokenFilter jwtTokenFilter;
+	
+	@Autowired
+	private CustomerService customerService;
+	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -34,17 +43,19 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		// TODO Auto-generated method stub
-		super.configure(auth);
+		auth.userDetailsService(
+	            email -> customerService.findCustomer(email)
+	                .orElseThrow(
+	                    () -> new UsernameNotFoundException("Email " + email + " not found.")));
 	}
 	
-	/*
+	
 	@Override
 	@Bean
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-	*/
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
@@ -60,19 +71,16 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 		
 		
 		http.authorizeRequests()
-			.antMatchers("/oauth2/**").permitAll()
+			.antMatchers("/", "/api/booking/**", "/api/login/**", "api/token/refresh/**","/oauth2/**").permitAll()
 	        //.antMatchers("/login**", "/error**").permitAll()
-	        .anyRequest().authenticated()
-	        .and()
-	    .oauth2Login()	    
-	    	//.userInfoEndpoint().userService(oAuth2UserService)
-	        .defaultSuccessUrl("/success")
-	        .and();
-	    
-	    //.oauth2Client();
+	        .anyRequest().authenticated();
+		
+		http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
 	}
 	
+	/*
 	@Autowired
 	private CustomOAuth2UserService oAuth2UserService;
+	*/
 }
