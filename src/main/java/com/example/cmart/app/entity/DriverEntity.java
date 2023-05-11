@@ -6,11 +6,16 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Size;
+
+import com.example.cmart.app.util.Gender;
 
 @Entity
 @Table(name = "drivers")
@@ -35,15 +40,23 @@ public class DriverEntity extends BaseEntity{
 	@Column
 	private String password;
 	
+	@Column(name = "phone_number")
+    @Size(max = 15)
+    private String phoneNumber;
+	
+	@Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private Gender gender;
+	
 	//danh gia
 	@Column
 	private Integer rating;
 	
 	@Column(name = "current_location_lat")
-	private float currentLocationLat;
+	private double currentLocationLat;
 	
 	@Column(name = "current_location_lng")
-	private float currentLocationLng;
+	private double currentLocationLng;
 	
 	@Column(name = "status")
 	private String status;
@@ -80,19 +93,19 @@ public class DriverEntity extends BaseEntity{
 		this.password = password;
 	}
 
-	public float getCurrentLocationLat() {
+	public double getCurrentLocationLat() {
 		return currentLocationLat;
 	}
 
-	public void setCurrentLocationLat(float currentLocationLat) {
+	public void setCurrentLocationLat(double currentLocationLat) {
 		this.currentLocationLat = currentLocationLat;
 	}
 
-	public float getCurrentLocationLng() {
+	public double getCurrentLocationLng() {
 		return currentLocationLng;
 	}
 
-	public void setCurrentLocationLng(float currentLocationLng) {
+	public void setCurrentLocationLng(double currentLocationLng) {
 		this.currentLocationLng = currentLocationLng;
 	}
 
@@ -126,6 +139,23 @@ public class DriverEntity extends BaseEntity{
 
 	public void setRatings(List<RatingEntity> ratings) {
 		this.ratings = ratings;
+	}
+
+	
+	public Gender getGender() {
+		return gender;
+	}
+
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 	
 }

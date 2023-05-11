@@ -16,6 +16,8 @@ import javax.validation.constraints.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.example.cmart.app.util.AuthProvider;
+
 @Entity// Đánh dấu đây là table trong db
 @Table(name = "customers")
 public class CustomerEntity extends BaseEntity implements UserDetails{

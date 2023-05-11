@@ -1,6 +1,7 @@
 package com.example.cmart.app.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,5 +19,10 @@ public class DriverService implements ImplDriverService{
 	@Override
 	public List<DriverEntity> getDrivers(int rating, String status) {
 		return driverRepository.getDrivers(rating, status);
+	}
+	
+	@Override
+	public Optional<DriverEntity> findByCarId(Long carID) {
+		return driverRepository.findByCarId(carID);
 	}
 }

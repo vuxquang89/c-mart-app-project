@@ -1,4 +1,4 @@
-package com.example.cmart.app.entity;
+package com.example.cmart.app.util;
 
 public enum AuthProvider {
 

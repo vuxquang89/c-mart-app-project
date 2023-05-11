@@ -16,27 +16,25 @@ public class CarEntity extends BaseEntity{
 	@OneToMany(mappedBy = "car")
 	private List<BookingEntity> bookings = new ArrayList<>();
 	
-	@OneToOne(mappedBy = "car")
-	private DriverEntity driver;
 	
 	@Column(name = "car_type")
-	String carType;
+	private String carType;
 	
 	@Column(name = "car_model")
-	String carModel;
+	private String carModel;
 	
 	@Column(name = "car_color")
-	String carColor;
+	private String carColor;
 	
 	//bien so
 	@Column(name = "car_plate")
-	String carPlate;
+	private String carPlate;
 	
 	@Column(name = "car_seating")
-	Integer carSeating;
+	private Integer carSeating;
 	
 	@Column(name = "car_price")
-	Double carPrice;
+	private Float carPrice;
 
 	public String getCarType() {
 		return carType;
@@ -78,11 +76,11 @@ public class CarEntity extends BaseEntity{
 		this.carSeating = carSeating;
 	}
 
-	public Double getCarPrice() {
+	public Float getCarPrice() {
 		return carPrice;
 	}
 
-	public void setCarPrice(Double carPrice) {
+	public void setCarPrice(Float carPrice) {
 		this.carPrice = carPrice;
 	}
 
@@ -92,15 +90,6 @@ public class CarEntity extends BaseEntity{
 
 	public void setBookings(List<BookingEntity> bookings) {
 		this.bookings = bookings;
-	}
-
-	public DriverEntity getDriver() {
-		return driver;
-	}
-
-	public void setDriver(DriverEntity driver) {
-		this.driver = driver;
-	}
-	
+	}	
 	
 }

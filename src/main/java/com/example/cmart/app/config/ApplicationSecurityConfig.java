@@ -71,7 +71,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 		
 		
 		http.authorizeRequests()
-			.antMatchers("/", "/api/booking/**", "/api/login/**", "api/token/refresh/**","/oauth2/**").permitAll()
+			.antMatchers("/", "/api/customer/**", "/api/booking/**", "/api/login/**", "api/token/refresh/**","/oauth2/**").permitAll()
 	        //.antMatchers("/login**", "/error**").permitAll()
 	        .anyRequest().authenticated();
 		

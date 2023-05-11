@@ -4,9 +4,14 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.example.cmart.app.util.BookingStatus;
+import com.example.cmart.app.util.PaymentMethod;
 
 @Entity
 @Table(name = "bookings")
@@ -21,16 +26,22 @@ public class BookingEntity extends BaseEntity{
 	private CarEntity car;
 	
 	@Column(name = "start_location_lat")
-	private float startLocationLat;
+	private double startLocationLat;
 	
 	@Column(name = "start_location_lng")
-	private float startLocationLng;
+	private double startLocationLng;
+	
+	@Column(name = "start_address")
+	private String startAddress;
 	
 	@Column(name = "end_location_lat")
-	private float endLocationLat;
+	private double endLocationLat;
 	
 	@Column(name = "end_location_lng")
-	private float endLocationLng;
+	private double endLocationLng;
+	
+	@Column(name = "end_address")
+	private String endAddress;
 	
 	@Column(name = "start_time")
 	private Date startTime;
@@ -39,10 +50,11 @@ public class BookingEntity extends BaseEntity{
 	private Date endTime;
 	
 	@Column(name = "total_fare")
-	private Double totalFare;
+	private float totalFare;
 	
 	@Column
-	private String status;
+	@Enumerated(EnumType.STRING)
+	private BookingStatus status;
 	
 	@Column(name = "booking_time")
 	private Date bookingTime;
@@ -54,53 +66,54 @@ public class BookingEntity extends BaseEntity{
 	private float distance;
 	
 	@Column(name = "payment_method")
-	private String paymentMethod;
+	@Enumerated(EnumType.STRING)
+	private PaymentMethod paymentMethod;
 
-	public float getStartLocationLat() {
+	public double getStartLocationLat() {
 		return startLocationLat;
 	}
 
-	public void setStartLocationLat(float startLocationLat) {
+	public void setStartLocationLat(double startLocationLat) {
 		this.startLocationLat = startLocationLat;
 	}
 
-	public float getStartLocationLng() {
+	public double getStartLocationLng() {
 		return startLocationLng;
 	}
 
-	public void setStartLocationLng(float startLocationLng) {
+	public void setStartLocationLng(double startLocationLng) {
 		this.startLocationLng = startLocationLng;
 	}
 
-	public float getEndLocationLat() {
+	public double getEndLocationLat() {
 		return endLocationLat;
 	}
 
-	public void setEndLocationLat(float endLocationLat) {
+	public void setEndLocationLat(double endLocationLat) {
 		this.endLocationLat = endLocationLat;
 	}
 
-	public float getEndLocationLng() {
+	public double getEndLocationLng() {
 		return endLocationLng;
 	}
 
-	public void setEndLocationLng(float endLocationLng) {
+	public void setEndLocationLng(double endLocationLng) {
 		this.endLocationLng = endLocationLng;
 	}
 
-	public Double getTotalFare() {
+	public float getTotalFare() {
 		return totalFare;
 	}
 
-	public void setTotalFare(Double totalFare) {
+	public void setTotalFare(float totalFare) {
 		this.totalFare = totalFare;
 	}
 
-	public String getStatus() {
+	public BookingStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(BookingStatus status) {
 		this.status = status;
 	}
 
@@ -128,11 +141,11 @@ public class BookingEntity extends BaseEntity{
 		this.distance = distance;
 	}
 
-	public String getPaymentMethod() {
+	public PaymentMethod getPaymentMethod() {
 		return paymentMethod;
 	}
 
-	public void setPaymentMethod(String paymentMethod) {
+	public void setPaymentMethod(PaymentMethod paymentMethod) {
 		this.paymentMethod = paymentMethod;
 	}
 
