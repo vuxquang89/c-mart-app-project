@@ -4,14 +4,8 @@ import java.util.List;
 
 import com.example.cmart.app.dto.BookingRequestDTO;
 import com.example.cmart.app.dto.CarDTO;
-import com.example.cmart.app.entity.BookingEntity;
 
-public interface ImplBookingService {
-	
+public interface ImplScheduledRideService {
+
 	List<CarDTO> getCarsInRadius(BookingRequestDTO request);
-	
-	BookingEntity save(BookingEntity bookingEntity);
-	BookingEntity cancel(long id);
-	
-	void delete(long id);
 }

@@ -16,6 +16,7 @@ import org.springframework.test.annotation.Rollback;
 import com.example.cmart.app.entity.CarEntity;
 import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.repository.DriverRepository;
+import com.example.cmart.app.util.DriverStatus;
 import com.example.cmart.app.util.Gender;
 
 @DataJpaTest
@@ -33,7 +34,7 @@ public class DriverRepositoryTests {
 		car.setCarModel("suzuky");
 		car.setCarType("oto");
 		car.setCarSeating(4);
-		car.setCarPrice(10000f);
+		car.setCarPrice(1000f);
 		car.setCarPlate("43H-23423");
 		
 		DriverEntity driver = new DriverEntity();
@@ -42,8 +43,10 @@ public class DriverRepositoryTests {
 		driver.setEmail("honghoa@gmail.com");
 		driver.setFullname("hoahong");
 		driver.setUsername("hoahong");
-		driver.setCurrentLocationLat(16.05273192279741);
-		driver.setCurrentLocationLng(108.20798588974174);
+		driver.setPhoneNumber("0903889228");
+		driver.setStatus(DriverStatus.waitting);
+		driver.setCurrentLocationLat(16.05419159373633);//
+		driver.setCurrentLocationLng(108.20908001404615);
 		driver.setRating(4);
 		
 		

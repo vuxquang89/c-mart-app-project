@@ -44,10 +44,10 @@ public class BookingEntity extends BaseEntity{
 	private String endAddress;
 	
 	@Column(name = "start_time")
-	private Date startTime;
+	private Date startTime; //thoi gian bat dau don 
 	
 	@Column(name = "end_time")
-	private Date endTime;
+	private Date endTime; //thoi gian den noi
 	
 	@Column(name = "total_fare")
 	private float totalFare;
@@ -60,7 +60,7 @@ public class BookingEntity extends BaseEntity{
 	private Date bookingTime;
 	
 	@Column(name = "payment_status")
-	private String paymentStatus;
+	private boolean paymentStatus = false;
 	
 	@Column
 	private float distance;
@@ -125,11 +125,11 @@ public class BookingEntity extends BaseEntity{
 		this.bookingTime = bookingTime;
 	}
 
-	public String getPaymentStatus() {
+	public boolean getPaymentStatus() {
 		return paymentStatus;
 	}
 
-	public void setPaymentStatus(String paymentStatus) {
+	public void setPaymentStatus(boolean paymentStatus) {
 		this.paymentStatus = paymentStatus;
 	}
 
@@ -179,6 +179,22 @@ public class BookingEntity extends BaseEntity{
 
 	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
+	}
+
+	public String getStartAddress() {
+		return startAddress;
+	}
+
+	public void setStartAddress(String startAddress) {
+		this.startAddress = startAddress;
+	}
+
+	public String getEndAddress() {
+		return endAddress;
+	}
+
+	public void setEndAddress(String endAddress) {
+		this.endAddress = endAddress;
 	}
 	
 	

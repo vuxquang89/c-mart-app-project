@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.repository.DriverRepository;
 import com.example.cmart.app.service.impl.ImplDriverService;
+import com.example.cmart.app.util.DriverStatus;
 
 @Service
 public class DriverService implements ImplDriverService{
@@ -17,12 +18,17 @@ public class DriverService implements ImplDriverService{
 	private DriverRepository driverRepository;
 	
 	@Override
-	public List<DriverEntity> getDrivers(int rating, String status) {
-		return driverRepository.getDrivers(rating, status);
+	public List<DriverEntity> getDrivers(int rating, DriverStatus status) {
+		return driverRepository.getDrivers(rating, status.name());
 	}
 	
 	@Override
 	public Optional<DriverEntity> findByCarId(Long carID) {
 		return driverRepository.findByCarId(carID);
+	}
+	
+	@Override
+	public DriverEntity save(DriverEntity driver) {
+		return driverRepository.save(driver);
 	}
 }

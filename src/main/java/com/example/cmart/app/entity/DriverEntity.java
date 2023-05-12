@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
+import com.example.cmart.app.util.DriverStatus;
 import com.example.cmart.app.util.Gender;
 
 @Entity
@@ -58,8 +59,9 @@ public class DriverEntity extends BaseEntity{
 	@Column(name = "current_location_lng")
 	private double currentLocationLng;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
-	private String status;
+	private DriverStatus status;
 
 	public String getFullname() {
 		return fullname;
@@ -109,11 +111,11 @@ public class DriverEntity extends BaseEntity{
 		this.currentLocationLng = currentLocationLng;
 	}
 
-	public String getStatus() {
+	public DriverStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(DriverStatus status) {
 		this.status = status;
 	}
 

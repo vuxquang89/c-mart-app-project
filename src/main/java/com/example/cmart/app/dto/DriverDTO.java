@@ -14,7 +14,7 @@ public class DriverDTO extends AbstractDTO<DriverDTO>{
 	private String carPlate;
 	private int carSeating;
 	private String carType;
-	private float totalPrace;
+
 	
 	public String getFullName() {
 		return fullName;
@@ -81,12 +81,6 @@ public class DriverDTO extends AbstractDTO<DriverDTO>{
 	}
 	public void setCarType(String carType) {
 		this.carType = carType;
-	}
-	public float getTotalPrace() {
-		return totalPrace;
-	}
-	public void setTotalPrace(float totalPrace) {
-		this.totalPrace = totalPrace;
 	}
 	
 	

@@ -1,5 +1,7 @@
 package com.example.cmart.app.dto;
 
+import java.util.Date;
+
 /**
  * nhận request từ người dùng
  * @author vux
@@ -17,6 +19,8 @@ public class BookingRequestDTO extends AbstractDTO<BookingRequestDTO>{
 	private double endLng;
 	private String endAddress;
 	private float distanceTransfer;
+	private Date startTime;
+	private int rideTime;//seconds
 	
 	private CarDTO car;
 	
@@ -69,6 +73,18 @@ public class BookingRequestDTO extends AbstractDTO<BookingRequestDTO>{
 	}
 	public void setCar(CarDTO car) {
 		this.car = car;
+	}
+	public int getRideTime() {
+		return rideTime;
+	}
+	public void setRideTime(int rideTime) {
+		this.rideTime = rideTime;
+	}
+	public Date getStartTime() {
+		return startTime;
+	}
+	public void setStartDate(Date startTime) {
+		this.startTime = startTime;
 	}
 	
 	

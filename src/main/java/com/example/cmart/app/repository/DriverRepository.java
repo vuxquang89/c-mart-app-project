@@ -14,7 +14,10 @@ public interface DriverRepository extends JpaRepository<DriverEntity, Long>{
 			+ "WHERE d.rating >= :rating and d.status = :status",
 			nativeQuery = true)
 	List<DriverEntity> getDrivers(int rating, String status);
-	
+	/*
+	@Query(value = "SELECT * FROM drivers d "
+			+ "WHERE d.car_id = :carID",
+			nativeQuery = true)*/
 	Optional<DriverEntity> findByCarId(Long carID);
 	
 	@Query(value = "select * from drivers d join cars c on d.car_id = c.id "

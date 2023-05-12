@@ -4,14 +4,30 @@ import java.util.List;
 
 public class BookingResponseDTO {
 
-	private List<DriverDTO> listBookingDriver;
+	private BookingDTO booking;
+	private DriverDTO driver;
 
-	public List<DriverDTO> getListBookingDriver() {
-		return listBookingDriver;
+	public BookingResponseDTO() {}
+	
+	public BookingResponseDTO(BookingDTO booking, DriverDTO driver) {
+		this.booking = booking;
+		this.driver = driver;
+	}
+	
+	public DriverDTO getDriver() {
+		return driver;
 	}
 
-	public void setListBookingDriver(List<DriverDTO> listBookingDriver) {
-		this.listBookingDriver = listBookingDriver;
+	public void setDriver(DriverDTO driver) {
+		this.driver = driver;
+	}
+
+	public BookingDTO getBooking() {
+		return booking;
+	}
+
+	public void setBooking(BookingDTO booking) {
+		this.booking = booking;
 	}
 	
 	
