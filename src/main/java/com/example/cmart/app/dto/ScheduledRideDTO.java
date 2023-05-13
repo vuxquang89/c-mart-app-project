@@ -1,72 +1,52 @@
-package com.example.cmart.app.entity;
+package com.example.cmart.app.dto;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import com.example.cmart.app.entity.CarEntity;
+import com.example.cmart.app.entity.CustomerEntity;
 
+public class ScheduledRideDTO {
 
-@Entity
-@Table(name = "scheduledrides")
-public class ScheduledRideEntity extends BaseEntity{
-
-	@ManyToOne
-	@JoinColumn(name = "customer_id")
-    private CustomerEntity customer;
+	private Long id;
 	
-	@ManyToOne
-	@JoinColumn(name = "car_id")
-	private CarEntity car;
+	private CarDTO car;
 	
-	@Column(name = "start_location_lat")
 	private double startLocationLat;
 	
-	@Column(name = "start_location_lng")
 	private double startLocationLng;
 	
-	@Column(name = "start_address")
 	private String startAddress;
 	
-	@Column(name = "end_location_lat")
 	private double endLocationLat;
 	
-	@Column(name = "end_location_lng")
 	private double endLocationLng;
 	
-	@Column(name = "end_address")
 	private String endAddress;
 	
-	@Column(name = "start_time")
 	private String startTime; //thoi gian bat dau don 
 	
-	@Column(name = "total_fare")
 	private float totalFare;
 	
-	@Column(name = "booking_time")
 	private String bookingTime;
 	
-	@Column
 	private float distance;
 	
-	@Column(name = "ride_time")
-	private int rideTime;//thoi gian cho quang đường đi xe (seconds)
+	private int rideTime;//seconds
 
-	public CustomerEntity getCustomer() {
-		return customer;
+	
+	public Long getId() {
+		return id;
 	}
 
-	public void setCustomer(CustomerEntity customer) {
-		this.customer = customer;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public CarEntity getCar() {
+	public CarDTO getCar() {
 		return car;
 	}
 
-	public void setCar(CarEntity car) {
+	public void setCar(CarDTO car) {
 		this.car = car;
 	}
 
@@ -157,7 +137,5 @@ public class ScheduledRideEntity extends BaseEntity{
 	public void setRideTime(int rideTime) {
 		this.rideTime = rideTime;
 	}
-	
-	
 	
 }

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cmart.app.converter.BookingConverter;
+import com.example.cmart.app.converter.DateTimeConverter;
 import com.example.cmart.app.converter.DistanceConverter;
 import com.example.cmart.app.converter.DriverConverter;
 import com.example.cmart.app.dto.BookingDTO;
@@ -62,6 +63,9 @@ public class BookingAPI {
 	private BookingService bookingService;
 	
 	@Autowired
+	private DateTimeConverter dateTimeConvert;
+	
+	@Autowired
 	private CarService carService;
 	
 	/**
@@ -81,7 +85,7 @@ public class BookingAPI {
 	 * @return
 	 */
 	@PostMapping("/customer/booking")
-	public ResponseEntity<?> booking(@RequestBody BookingRequestDTO requestDTO){
+	public ResponseEntity<BookingDTO> booking(@RequestBody BookingRequestDTO requestDTO){
 		try {
 			DriverEntity driverEntity = driverService.findByCarId(requestDTO.getCar().getId()).orElse(null);
 			if(driverEntity != null) {
@@ -96,7 +100,7 @@ public class BookingAPI {
 						driverEntity.getCurrentLocationLng(), requestDTO.getDistanceTransfer(), carEntity);
 				
 				bookingEntity.setTotalFare(totalPrace);
-				bookingEntity.setStartTime(new Date());
+				bookingEntity.setStartTime(dateTimeConvert.nowString());
 				BookingDTO bookingDTO = bookingConvert.toDTO(bookingService.save(bookingEntity));
 								
 				driverEntity.setStatus(DriverStatus.receive);
@@ -108,8 +112,9 @@ public class BookingAPI {
 			}else {
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 			}
-		}catch(BadCredentialsException ex) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}catch(Exception ex) {
+			//return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	

@@ -9,4 +9,6 @@ import com.example.cmart.app.entity.ScheduledRideEntity;
 public interface ScheduledRideRepository extends JpaRepository<ScheduledRideEntity, Long>{
 
 	List<ScheduledRideEntity> findByCarId(long id);
+	
+	List<ScheduledRideEntity> findByCustomerId(long id);
 }

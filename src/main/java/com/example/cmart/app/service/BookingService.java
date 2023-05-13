@@ -2,6 +2,7 @@ package com.example.cmart.app.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,6 +73,11 @@ public class BookingService implements ImplBookingService{
 			bookingRepository.save(booking);
 		}
 		return booking;
+	}
+	
+	@Override
+	public Optional<BookingEntity> findById(long id) {
+		return bookingRepository.findById(id);
 	}
 	
 	@Override

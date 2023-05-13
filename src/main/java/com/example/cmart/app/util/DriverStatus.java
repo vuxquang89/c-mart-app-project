@@ -5,5 +5,5 @@ public enum DriverStatus {
 	off,
 	waitting,
 	receive,//tiếp nhận
-	tack_up
+	pick_up
 }

@@ -5,12 +5,20 @@ public class CarDTO {
 	private Long id;
 	private String carType;
 	private int carSeating;
+	private String carPlate;
 	private float totalPrace;
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public String getCarPlate() {
+		return carPlate;
+	}
+	public void setCarPlate(String carPlate) {
+		this.carPlate = carPlate;
 	}
 	public String getCarType() {
 		return carType;
