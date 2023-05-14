@@ -34,8 +34,9 @@ public class VNPayService {
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        //vnp_Params.put("vnp_Amount", String.valueOf(total*100));
-        vnp_Params.put("vnp_Amount", String.valueOf(total));
+        vnp_Params.put("vnp_Amount", String.valueOf((int)total*100));
+        //vnp_Params.put("vnp_Amount", String.valueOf((int)total));
+        //vnp_Params.put("vnp_Amount", String.valueOf(230000));
         vnp_Params.put("vnp_CurrCode", "VND");
         
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
@@ -87,6 +88,7 @@ public class VNPayService {
         String queryUrl = query.toString();
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.vnp_HashSecret, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+        System.out.println(vnp_SecureHash);
         String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
         return paymentUrl;
     }

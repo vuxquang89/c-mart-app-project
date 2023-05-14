@@ -19,6 +19,7 @@ import com.example.cmart.app.dto.PaymentInfoDTO;
 import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.service.BookingService;
 import com.example.cmart.app.service.VNPayService;
+import com.example.cmart.app.util.BookingStatus;
 
 @RestController
 @RequestMapping("/api")
@@ -36,7 +37,7 @@ public class VNPayBookingAPI {
 			PaymentInfoDTO paymentInfo = new PaymentInfoDTO();
 			paymentInfo.setId(id);
 			paymentInfo.setAmount(bookingEntity.getTotalFare());
-			paymentInfo.setContentPayment("Thanh toan chuyen di " + id);
+			paymentInfo.setContentPayment("Thanh toan chuyen di voi ma @" + id);
 			return new ResponseEntity<>(paymentInfo, HttpStatus.OK);
 		}else {
 			Map<String, String> mess = new HashMap<String, String>();
@@ -60,9 +61,10 @@ public class VNPayBookingAPI {
         int paymentStatus = vnPayService.orderReturn(request);
 
         String orderInfo = request.getParameter("vnp_OrderInfo");
+        
         String paymentTime = request.getParameter("vnp_PayDate");
         String transactionId = request.getParameter("vnp_TransactionNo");
-        String totalPrice = request.getParameter("vnp_Amount");
+        String totalPrice = Integer.parseInt(request.getParameter("vnp_Amount"))/100 + "";
 
         Map<String, String> result = new HashMap<String, String>();
         result.put("orderId", orderInfo);
@@ -70,10 +72,19 @@ public class VNPayBookingAPI {
         result.put("paymentTime", paymentTime);
         result.put("transactionId", transactionId);
         if(paymentStatus == 1) {
+        	long bookingId = getId(orderInfo);
+        	BookingEntity booking = bookingService.findById(bookingId).orElse(null);
+        	booking.setPaymentStatus(true);
+        	bookingService.save(booking);
         	result.put("result", "paymentsuccess");
         }else {
         	result.put("result", "paymentfail");
         }
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+	
+	private long getId(String str) {
+		String[] arrOfStr = str.split("@");
+		return Long.parseLong(arrOfStr[1]);
+	}
 }
