@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import com.example.cmart.app.converter.ChatMessageConverter;
 import com.example.cmart.app.dto.MessageDTO;
@@ -13,6 +14,7 @@ import com.example.cmart.app.entity.ChatMessageEntity;
 import com.example.cmart.app.repository.ChatMessageRepository;
 import com.example.cmart.app.service.impl.ImplChatMessageService;
 
+@Service
 public class ChatMessageService implements ImplChatMessageService{
 
 	@Autowired

@@ -41,6 +41,7 @@ public class MessageControllerAPI {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
 		String username = userDetails.getUsername();
+		System.out.println("user name : " + username); 
 		
 		System.out.println("Handling send message: " + message + " to " + to);
 		

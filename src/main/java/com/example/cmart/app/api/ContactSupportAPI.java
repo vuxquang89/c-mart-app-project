@@ -11,39 +11,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cmart.app.dto.ContactSupportDTO;
+import com.example.cmart.app.service.MailService;
 
 @RestController
 @RequestMapping("/api")
 public class ContactSupportAPI {
 
 	@Autowired
-    private JavaMailSender mailSender;
+	private MailService mailService;
 	
 	@PostMapping("/customer/contact")
 	public ResponseEntity<?> submitContact(@RequestBody ContactSupportDTO contact) throws UnsupportedEncodingException, MessagingException{
-		MimeMessage message = mailSender.createMimeMessage();
-		MimeMessageHelper helper = new MimeMessageHelper(message);
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+		String username = userDetails.getUsername();
+		System.out.println("contact support - user name : " + username);
 		
-		String mailSubject = contact.getFullname() + " has sent a message";
-		String mailContent = "<p><b>Sender Name :</b>" + contact.getFullname() + "</p>";
-		mailContent += "<p><b>Sender E-mail:</b>"+contact.getEmail()+"</p>";
-		mailContent += "<p><b>Subject:</b>"+contact.getSubject()+"</p>";
-		mailContent += "<p><b>Content:</b>"+contact.getContent()+"</p>";
-		
-		helper.setFrom("vux.quang89@gmail.com", "C-Mart");
-		helper.setTo("vudqfx10478@funix.edu.vn");
-		helper.setSubject(mailSubject);
-		helper.setText(mailContent, true);
-		
-		mailSender.send(message);
-		Map<String, String> mess = new HashMap<String, String>();
-		mess.put("result", "Send mail success!");
-		return ResponseEntity.ok(mess);
+		try {
+			boolean sendMail = mailService.sendEmail(contact);
+			Map<String, String> mess = new HashMap<String, String>();
+			String message = "";
+			if(sendMail) {
+				message = "Send mail success!";
+			}else {
+				message = "Send mail failed!";				
+			}
+			
+			mess.put("result", message);
+			return ResponseEntity.ok(mess);
+			
+		}catch (Exception e) {
+			System.out.println(e.toString());
+			return ResponseEntity.badRequest().build();
+		}
 	}
 }
