@@ -14,6 +14,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.cmart.app.util.AuthProvider;
@@ -39,11 +40,16 @@ public class CustomerEntity extends BaseEntity implements UserDetails{
 	@Column
 	String phone;
 	
+	@Column
+	private String username;
+	
 	@Email
 	String email;
 	
 	@Column
 	String password;
+	@Column
+	private String role;
 	
 	@NotNull
     @Enumerated(EnumType.STRING)
@@ -55,8 +61,13 @@ public class CustomerEntity extends BaseEntity implements UserDetails{
 	 */
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+		List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+			
+		//for(RoleEntity role : roles) {
+			//authorities.add(new SimpleGrantedAuthority(role.getCode()));
+		//}
+		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+		return authorities;
 	}
 
 	@Override
@@ -108,6 +119,10 @@ public class CustomerEntity extends BaseEntity implements UserDetails{
 		this.email = email;
 	}
 
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	public String getPassword() {
 		return password;
 	}
@@ -139,6 +154,13 @@ public class CustomerEntity extends BaseEntity implements UserDetails{
 	public void setRatings(List<RatingEntity> ratings) {
 		this.ratings = ratings;
 	}
-	
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
 }
 

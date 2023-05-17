@@ -19,4 +19,9 @@ public class CustomerService implements ImplCustomerService{
 	public Optional<CustomerEntity> findCustomer(String email) {
 		return customerRepository.findByEmail(email);
 	}
+	
+	@Override
+	public Optional<CustomerEntity> findCustomerByUsername(String username) {
+		return customerRepository.findByUsername(username);
+	}
 }

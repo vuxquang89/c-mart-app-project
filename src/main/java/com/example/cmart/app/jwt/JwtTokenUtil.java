@@ -41,7 +41,7 @@ public class JwtTokenUtil {
 	public String generateAccessToken(CustomerEntity user) {
 		return Jwts.builder()
 				.setSubject(user.getId()+ "," + user.getEmail())
-				.setIssuer("Example")
+				.setIssuer("Bearer")
 				.claim("roles", "ROLE_USER")
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION_ACCESS_TOKEN))//thoi gian het han

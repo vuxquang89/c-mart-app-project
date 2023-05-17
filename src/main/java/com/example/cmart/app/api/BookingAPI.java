@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,12 +32,15 @@ import com.example.cmart.app.dto.BookingRequestDTO;
 import com.example.cmart.app.dto.BookingResponseDTO;
 import com.example.cmart.app.dto.CarDTO;
 import com.example.cmart.app.dto.DriverDTO;
+import com.example.cmart.app.dto.HistoryToPlacesDTO;
 import com.example.cmart.app.dto.ResponseDTO;
 import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.entity.CarEntity;
+import com.example.cmart.app.entity.CustomerEntity;
 import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.service.BookingService;
 import com.example.cmart.app.service.CarService;
+import com.example.cmart.app.service.CustomerService;
 import com.example.cmart.app.service.DriverService;
 import com.example.cmart.app.util.AppConstants;
 import com.example.cmart.app.util.BookingStatus;
@@ -60,6 +65,9 @@ public class BookingAPI {
 	private DriverService driverService;
 	
 	@Autowired
+	private CustomerService customerService;
+	
+	@Autowired
 	private BookingService bookingService;
 	
 	@Autowired
@@ -74,6 +82,7 @@ public class BookingAPI {
 	 * @return danh sach cac xe dang o gan vi tri nguoi dung dang dung
 	 */
 	@PostMapping("/customer/booking/cars")
+	@RolesAllowed("ROLE_USER")
 	public ResponseEntity<?> getBookingDrivers(@RequestBody BookingRequestDTO requestDTO) {
 		List<CarDTO> listCar = bookingService.getCarsInRadius(requestDTO);
 		return ResponseEntity.ok(listCar);
@@ -118,6 +127,32 @@ public class BookingAPI {
 		}
 	}
 	
+	/**
+	 * khi khach hang chon di chuyen
+	 * @return danh sach cac diem da den
+	 */
+	@GetMapping("/customer/move")
+	public ResponseEntity<?> showHistoryToPlaces(){
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+		String username = userDetails.getUsername();
+		System.out.println("customer move - username : " + username);
+		
+		CustomerEntity customer = customerService.findCustomerByUsername(username).get();
+		List<BookingEntity> listBooking = bookingService.findByCustomer(customer);
+		List<HistoryToPlacesDTO> historyToPlaces = new ArrayList<HistoryToPlacesDTO>();
+		for(BookingEntity book : listBooking) {
+			historyToPlaces.add(bookingConvert.toHistoryDTO(book));
+		}
+		
+		return ResponseEntity.ok(historyToPlaces);
+	}
+	
+	/**
+	 * huy dat xe
+	 * @param id
+	 * @return
+	 */
 	@PutMapping("/customer/booking/cancel/{id}")
 	public ResponseEntity<?> cancelBooking(@PathVariable("id") long id){
 		BookingEntity bookingEntity = bookingService.cancel(id);
@@ -136,6 +171,31 @@ public class BookingAPI {
 		bookingService.delete(id);
 	}
 	
+	/**
+	 * xem lich su book xe
+	 * @return danh sach cac chuyen di da book
+	 */
+	@GetMapping("/customer/booking/history")
+	public ResponseEntity<?> getHistoryBooking(){
+		List<BookingDTO> historyBooking = new ArrayList<BookingDTO>();
+		
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+		String username = userDetails.getUsername();
+		System.out.println("history booking - username : " + username);
+		
+		CustomerEntity customer = customerService.findCustomerByUsername(username).get();
+		List<BookingEntity> listBooking = bookingService.findByCustomer(customer);
+		
+		for(BookingEntity book : listBooking) {
+			BookingDTO bookingDTO = bookingConvert.toDTO(book);
+			DriverEntity driver = driverService.findByCarId(book.getCar().getId()).get();
+			DriverDTO driverDTO = driverConvert.toDTO(driver);
+			bookingDTO.setDriver(driverDTO);
+			historyBooking.add(bookingDTO);
+		}
+		return ResponseEntity.ok(historyBooking);
+	}
 	
 	/*
 	@GetMapping("/booking")

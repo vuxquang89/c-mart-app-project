@@ -14,6 +14,7 @@ import com.example.cmart.app.dto.BookingRequestDTO;
 import com.example.cmart.app.dto.CarDTO;
 import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.entity.CarEntity;
+import com.example.cmart.app.entity.CustomerEntity;
 import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.repository.BookingRepository;
 import com.example.cmart.app.service.impl.ImplBookingService;
@@ -78,6 +79,11 @@ public class BookingService implements ImplBookingService{
 	@Override
 	public Optional<BookingEntity> findById(long id) {
 		return bookingRepository.findById(id);
+	}
+	
+	@Override
+	public List<BookingEntity> findByCustomer(CustomerEntity customer) {
+		return bookingRepository.findByCustomer(customer);
 	}
 	
 	@Override

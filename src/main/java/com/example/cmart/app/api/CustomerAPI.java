@@ -1,7 +1,9 @@
 package com.example.cmart.app.api;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +21,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +34,7 @@ import com.example.cmart.app.dto.CustomerRequestDTO;
 import com.example.cmart.app.dto.CustomerResponseDTO;
 import com.example.cmart.app.entity.CustomerEntity;
 import com.example.cmart.app.jwt.JwtTokenUtil;
+import com.example.cmart.app.service.CustomerService;
 
 @RestController
 @RequestMapping("/")
@@ -40,30 +44,10 @@ public class CustomerAPI {
 	private AuthenticationManager authManager;
 	
 	@Autowired
+	private CustomerService customerService;
+	
+	@Autowired
 	private JwtTokenUtil jwtUtil;
-	
-	@GetMapping
-	public Map<String, Object> currentUser(OAuth2AuthenticationToken token){
-		return token.getPrincipal().getAttributes();
-	}
-	
-	@GetMapping("success")
-    public Map<String, Object> success(OAuth2AuthenticationToken token) {
-        //String accessToken = token.getAccessToken().getTokenValue();
-        // use the access token to authenticate the user for other API calls
-		System.out.println("chay cai nay");
-		System.out.println(token.getPrincipal().getAttributes());
-		return token.getPrincipal().getAttributes();
-    }
-	
-	
-	@GetMapping("api/login/google/callback")
-    public String home(@AuthenticationPrincipal OAuth2User user) {
-        String name = user.getAttribute("name");
-        String email = user.getAttribute("email");
-        
-        return name;
-    }
     
 	
 	@PostMapping("api/login")
@@ -90,6 +74,51 @@ public class CustomerAPI {
 		
 	}
 	
+	@GetMapping("api/token/refresh")
+	public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException{
+		String header = request.getHeader("Authorization");
+		System.out.println("refresh token " + header);
+		if(ObjectUtils.isEmpty(header) || !header.startsWith("Bearer")) {
+			throw new RuntimeException("Refresh token is missing");
+		}else {
+			try {
+				String refreshToken = header.split(" ")[1].trim();
+				
+				if(jwtUtil.validateToken(refreshToken, response)) {
+					String username = jwtUtil.getUserNameFromJwtSubject(refreshToken);
+					Optional<CustomerEntity> user = customerService.findCustomer(username);
+					String accessToken = jwtUtil.generateAccessToken(user.get());
+					//UserResponseDTO res = new UserResponseDTO(user.get().getUsername(), accessToken, refreshToken);
+					CustomerResponseDTO res = new CustomerResponseDTO(user.get().getEmail(), accessToken, refreshToken);
+					return ResponseEntity.ok(res);
+				}else {
+					return ResponseEntity.ok().body("You need to login again!");
+				}
+				
+				
+			}catch(Exception ex) {
+				/*
+				Map<String, String> error = new HashMap<String, String>();
+				
+				error.put("error_message", ex.getMessage());
+				new ObjectMapper().writeValue(response.getOutputStream(), error);
+				*/
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+			}
+			 
+		}
+	}
 	
-	
+	/*
+	private void revokeAllUserTokens(UserEntity user) {
+		List<TokenEntity> tokens = tokenService.findAllTokensByUser(user.getId());
+		if(tokens.isEmpty())
+			return;
+		tokens.forEach(t ->{
+			t.setExpired(true);
+			t.setRevoked(true);
+		});
+		tokenService.saveAll(tokens);
+	}
+	*/
 }

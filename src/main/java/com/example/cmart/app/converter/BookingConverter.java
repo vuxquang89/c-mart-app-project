@@ -2,11 +2,13 @@ package com.example.cmart.app.converter;
 
 import java.util.Date;
 
+import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.stereotype.Component;
 
 import com.example.cmart.app.dto.BookingDTO;
 import com.example.cmart.app.dto.BookingRequestDTO;
 import com.example.cmart.app.dto.DriverDTO;
+import com.example.cmart.app.dto.HistoryToPlacesDTO;
 import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.util.PaymentMethod;
 
@@ -40,11 +42,21 @@ public class BookingConverter {
 			dto.setEndLat(entity.getEndLocationLat());
 			dto.setEndLng(entity.getEndLocationLng());
 			dto.setEndAddress(entity.getEndAddress());
-			
+			dto.setStartTime(entity.getStartTime());
+			dto.setEndTime(entity.getEndTime());
 			dto.setDistanceTransfer(entity.getDistance());
 			
 			dto.setTotalFare(entity.getTotalFare());
+			dto.setPaymentMethod(entity.getPaymentMethod());
 		}
+		return dto;
+	}
+	
+	public HistoryToPlacesDTO toHistoryDTO(BookingEntity entity) {
+		HistoryToPlacesDTO dto = new HistoryToPlacesDTO();
+		dto.setLat(entity.getEndLocationLat());
+		dto.setLng(entity.getEndLocationLng());
+		dto.setAddress(entity.getEndAddress());
 		return dto;
 	}
 }

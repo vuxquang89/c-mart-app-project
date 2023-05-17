@@ -17,6 +17,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.cmart.app.entity.CustomerEntity;
+import com.example.cmart.app.entity.RoleEntity;
 
 import io.jsonwebtoken.Claims;
 
@@ -36,7 +37,7 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 			
 		
 			/*
-			 * xac thuc Authorization Header chua ma bat dau voi "Example"
+			 * xac thuc Authorization Header chua ma bat dau voi "Bearer"
 			 *
 			 */
 			if(!hasAuthorizationHeader(request)) {
@@ -78,12 +79,12 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 		
 		roles = roles.replace("[", "").replace("]", "");
 		
-		//String[] roleNames = roles.split(",");
-		/*
+		String[] roleNames = roles.split(",");
+		
 		for(String roleName : roleNames) {
-			user.addRole(new RoleEntity(roleName.trim()));
+			user.setRole(roleName.trim());
 		}
-		*/
+		
 		//String[] subjectArray = jwtUtil.getSubject(accessToken).split(",");
 		//user.setId(Long.parseLong(subjectArray[0]));
 		//user.setUsername(subjectArray[1]);
@@ -99,7 +100,7 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 		String header = request.getHeader("Authorization");
 		System.out.println("Authorization header : " + header);
 		
-		if(ObjectUtils.isEmpty(header) || !header.startsWith("Example")) {
+		if(ObjectUtils.isEmpty(header) || !header.startsWith("Bearer")) {
 			return false;
 		}
 		return true;

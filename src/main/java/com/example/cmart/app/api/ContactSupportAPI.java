@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -29,10 +30,13 @@ public class ContactSupportAPI {
 	private MailService mailService;
 	
 	@PostMapping("/customer/contact")
+	@RolesAllowed("ROLE_USER")
 	public ResponseEntity<?> submitContact(@RequestBody ContactSupportDTO contact) throws UnsupportedEncodingException, MessagingException{
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
+		
 		String username = userDetails.getUsername();
+		
 		System.out.println("contact support - user name : " + username);
 		
 		try {

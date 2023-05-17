@@ -7,22 +7,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.example.cmart.app.entity.CustomerEntity;
 import com.example.cmart.app.jwt.JwtTokenFilter;
-import com.example.cmart.app.oauth.CustomOAuth2UserService;
 import com.example.cmart.app.service.CustomerService;
 
-/*
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
@@ -31,8 +31,8 @@ import com.example.cmart.app.service.CustomerService;
 		jsr250Enabled = true //cho phep sử dụng chú thích @RolesAllowed trong mã API 
 								//để duoc ủy quyền cấp phương thức
 )
-*/
-public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter{
+
+public class SecurityConfig {
 
 	@Autowired
 	private JwtTokenFilter jwtTokenFilter;
@@ -45,58 +45,53 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter{
 		return new BCryptPasswordEncoder();
 	}
 	
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(
-	            email -> customerService.findCustomer(email)
-	                .orElseThrow(
-	                    () -> new UsernameNotFoundException("Email " + email + " not found.")));
-	}
-	
-	
-	@Override
 	@Bean
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
+	public UserDetailsService userDetailsService() {
+		return new UserDetailsService() {
+			
+			@Override
+			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+				
+				return customerService.findCustomer(username)
+						.orElseThrow(()->new UsernameNotFoundException("User not found"));
+			}
+		};
 	}
 	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
+	}
+	
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 		http.csrf().disable();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		//http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
 		//show message
 		http.exceptionHandling().authenticationEntryPoint(
-				(request, response, ex) ->{
-					response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-					ex.getMessage());
-				}
+						(request, response, ex) ->{
+							response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+							ex.getMessage());
+						}
 		);
 		
-		
 		http.authorizeRequests()
-			//.antMatchers("/", "/api/customer/**", "/api/booking/**", "/api/login/**", "api/token/refresh/**","/oauth2/**").permitAll()
-	        .antMatchers("/","/api/login/**", "/api/register/**", "/api/token/refresh/**", "/error/**").permitAll()
-	        .anyRequest().authenticated()
-	        .and()
-	        .formLogin().permitAll()
-	        .and()
-	        .oauth2Login(
-	        		//oc -> oc						
-					//.loginProcessingUrl("/login")
-					//.loginPage("/login")
-					//.defaultSuccessUrl("/history")
-	        		)
-	        	
-	        	.defaultSuccessUrl("/success")
-	        ;
-		
+				.antMatchers("/", "/api/login/**").permitAll()
+				.anyRequest().authenticated()
+				.and()
+	            .formLogin().permitAll()
+				.and().oauth2Login(
+						oc -> oc						
+							//.loginProcessingUrl("/login")
+							//.loginPage("/login")
+							.defaultSuccessUrl("/api/google/success")
+						)
+				
+					
+				;
 		http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
+		
+		return http.build();
 	}
-	
-	/*
-	@Autowired
-	private CustomOAuth2UserService oAuth2UserService;
-	*/
 }
