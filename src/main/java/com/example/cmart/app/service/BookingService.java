@@ -62,8 +62,11 @@ public class BookingService implements ImplBookingService{
 	}
 	
 	@Override
-	public BookingEntity save(BookingEntity bookingEntity) {		
-		return bookingRepository.save(bookingEntity);
+	public BookingEntity save(BookingEntity bookingEntity) {
+		
+		BookingEntity entity = bookingRepository.save(bookingEntity);
+		System.out.println("booking service save : " + entity.getId());
+		return entity;
 	}
 	
 	@Override
@@ -99,7 +102,7 @@ public class BookingService implements ImplBookingService{
 	}
 	
 	public float calPrace(double distance, float distanceTransfer, float carPrice) {
-		return (float)(((int)distanceTransfer + (int)distance) * carPrice);
+		return (float)(((int)distanceTransfer + (int)distance) * carPrice)/100;
 	}
 	
 	public float calTotalPrace(double startLat, double startLng, double currentLat, double currentLng,

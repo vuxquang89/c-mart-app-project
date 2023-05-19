@@ -18,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.cmart.app.entity.CustomerEntity;
 import com.example.cmart.app.entity.RoleEntity;
+import com.example.cmart.app.service.JwtTokenService;
 
 import io.jsonwebtoken.Claims;
 
@@ -25,12 +26,13 @@ import io.jsonwebtoken.Claims;
 public class JwtTokenFilter extends OncePerRequestFilter{
 
 	@Autowired
-	private JwtTokenUtil jwtUtil;
+	private JwtTokenService jwtUtil;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		if(request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/token/refresh")) {
+		if(request.getServletPath().equals("/api/customer/login") || 
+				request.getServletPath().equals("/api/customer/token/refresh")) {
 			filterChain.doFilter(request, response);
 			return;
 		}else {
@@ -45,7 +47,7 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 				return;
 			}
 			
-			String accessToken = getAccessToken(request);
+			String accessToken = jwtUtil.getToken(request);
 			
 						
 			if(!jwtUtil.validateToken(accessToken, response)) {
@@ -82,6 +84,7 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 		String[] roleNames = roles.split(",");
 		
 		for(String roleName : roleNames) {
+			System.out.println("role : " + roleName);
 			user.setRole(roleName.trim());
 		}
 		
@@ -91,7 +94,8 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 		String[] jwtSubject = subject.split(",");
 		user.setId(Long.parseLong(jwtSubject[0]));
 		
-		user.setEmail(jwtSubject[1]);
+		//user.setEmail(jwtSubject[1]);
+		user.setUsername(jwtSubject[1]);
 		
 		return user;
 	}
@@ -106,12 +110,4 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 		return true;
 	}
 	
-	private String getAccessToken(HttpServletRequest request) {
-		String header = request.getHeader("Authorization");
-		String token = header.split(" ")[1].trim();
-		
-		System.out.println("Access Token : " + token);
-		
-		return token;
-	}
 }

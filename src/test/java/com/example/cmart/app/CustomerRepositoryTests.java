@@ -41,4 +41,20 @@ public class CustomerRepositoryTests {
 		assertThat(customerSave).isNotNull();
 		assertThat(customerSave.getId()).isGreaterThan(0);
 	}
+	
+	@Test
+	public void testEditCustomer() {
+		
+		CustomerEntity customer1 = repo.findByEmail("vudqfx10478@funix.edu.vn").get();
+		//customer1.setEmail("vudqfx10478@funix.edu.vn");
+		customer1.setFullname("quangvu");
+		
+		customer1.setProvider(AuthProvider.local);
+		customer1.setPhone("0769475843");
+		
+		CustomerEntity customerSave = repo.save(customer1);
+		
+		assertThat(customerSave).isNotNull();
+		assertThat(customerSave.getId()).isGreaterThan(0);
+	}
 }

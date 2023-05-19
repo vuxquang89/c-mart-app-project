@@ -1,16 +1,12 @@
 package com.example.cmart.app.converter;
 
-import java.util.Date;
 
-import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.stereotype.Component;
 
 import com.example.cmart.app.dto.BookingDTO;
 import com.example.cmart.app.dto.BookingRequestDTO;
-import com.example.cmart.app.dto.DriverDTO;
 import com.example.cmart.app.dto.HistoryToPlacesDTO;
 import com.example.cmart.app.entity.BookingEntity;
-import com.example.cmart.app.util.PaymentMethod;
 
 @Component
 public class BookingConverter {
@@ -23,9 +19,25 @@ public class BookingConverter {
 		entity.setEndLocationLat(requestDTO.getEndLat());
 		entity.setEndLocationLng(requestDTO.getEndLng());
 		System.out.println(requestDTO.getEndAddress());
-		entity.setEndAddress(entity.getEndAddress());
+		entity.setEndAddress(requestDTO.getEndAddress());
 		//entity.setStatus(BookingStatus.waitting);
-		entity.setBookingTime(new Date());
+		//entity.setBookingTime(new Date());
+		entity.setDistance(requestDTO.getDistanceTransfer());
+		entity.setTotalFare(requestDTO.getCar().getTotalPrace());
+		return entity;
+	}
+	
+	public BookingEntity toEntity(BookingRequestDTO requestDTO, BookingEntity entity) {
+		
+		entity.setStartLocationLat(requestDTO.getStartLat());
+		entity.setStartLocationLng(requestDTO.getStartLng());
+		entity.setStartAddress(requestDTO.getStartAddress());
+		entity.setEndLocationLat(requestDTO.getEndLat());
+		entity.setEndLocationLng(requestDTO.getEndLng());
+		System.out.println(requestDTO.getEndAddress());
+		entity.setEndAddress(requestDTO.getEndAddress());
+		//entity.setStatus(BookingStatus.waitting);
+		//entity.setBookingTime(new Date());
 		entity.setDistance(requestDTO.getDistanceTransfer());
 		entity.setTotalFare(requestDTO.getCar().getTotalPrace());
 		return entity;
@@ -34,7 +46,7 @@ public class BookingConverter {
 	public BookingDTO toDTO(BookingEntity entity) {
 		
 		BookingDTO dto = new BookingDTO();
-		if(entity != null) {
+		if(entity.getId() != null) {
 			dto.setId(entity.getId());
 			dto.setStartLat(entity.getStartLocationLat());
 			dto.setStartLng(entity.getStartLocationLng());

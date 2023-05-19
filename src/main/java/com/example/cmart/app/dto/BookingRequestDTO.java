@@ -26,7 +26,7 @@ public class BookingRequestDTO extends AbstractDTO<BookingRequestDTO>{
     //(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone="GMT")
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private String startTime;
-	private int rideTime;//seconds
+	private int rideTime;//thoi gian di chuyen du kien (seconds)
 	
 	private CarDTO car;
 	
@@ -89,7 +89,7 @@ public class BookingRequestDTO extends AbstractDTO<BookingRequestDTO>{
 	public String getStartTime() {
 		return startTime;
 	}
-	public void setStartDate(String startTime) {
+	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
 	

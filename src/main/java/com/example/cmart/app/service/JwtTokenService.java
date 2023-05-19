@@ -1,18 +1,21 @@
-package com.example.cmart.app.jwt;
+package com.example.cmart.app.service;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.example.cmart.app.entity.CustomerEntity;
+import com.example.cmart.app.util.AppConstants;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,12 +28,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
-@Component
-public class JwtTokenUtil {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
-	private static final long EXPIRE_DURATION_ACCESS_TOKEN = 10 * 60 * 1000; //10m
-	private static final long EXPIRE_DURATION_REFRESH_TOKEN = 30 * 60 * 1000; //30m
+@Service
+public class JwtTokenService {
 	
 	@Value("${app.jwt.secret}") //lay gia tri tu file .properties
 	private String secretKey;
@@ -44,7 +43,7 @@ public class JwtTokenUtil {
 				.setIssuer("Bearer")
 				.claim("roles", "ROLE_USER")
 				.setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION_ACCESS_TOKEN))//thoi gian het han
+				.setExpiration(new Date(System.currentTimeMillis() + AppConstants.EXPIRE_DURATION_ACCESS_TOKEN))//thoi gian het han
 				.signWith(SignatureAlgorithm.HS512, secretKey)//tao chu ky
 				.compact();
 	}
@@ -57,7 +56,7 @@ public class JwtTokenUtil {
 				.setSubject(user.getId() +","+user.getEmail())
 				.setIssuer("Bearer")
 				.setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + EXPIRE_DURATION_REFRESH_TOKEN))
+				.setExpiration(new Date(System.currentTimeMillis() + AppConstants.EXPIRE_DURATION_REFRESH_TOKEN))
 				.signWith(SignatureAlgorithm.HS512, secretKey)
 				.compact();
 	}
@@ -72,19 +71,19 @@ public class JwtTokenUtil {
 			return true;
 		}catch(ExpiredJwtException ex) {
 			exMessage = ex.getMessage();
-			LOGGER.error("JWT expired", ex);
+			AppConstants.LOGGER.error("JWT expired", ex);
 		}catch (IllegalArgumentException ex) {
 			exMessage = ex.getMessage();
-            LOGGER.error("Token is null, empty or only whitespace", ex.getMessage());
+			AppConstants.LOGGER.error("Token is null, empty or only whitespace", ex.getMessage());
         } catch (MalformedJwtException ex) {
         	exMessage = ex.getMessage();
-            LOGGER.error("JWT is invalid", ex);
+        	AppConstants.LOGGER.error("JWT is invalid", ex);
         } catch (UnsupportedJwtException ex) {
         	exMessage = ex.getMessage();
-            LOGGER.error("JWT is not supported", ex);
+        	AppConstants.LOGGER.error("JWT is not supported", ex);
         } catch (SignatureException ex) {
         	exMessage = ex.getMessage();
-            LOGGER.error("Signature validation failed");
+        	AppConstants.LOGGER.error("Signature validation failed");
         }
 		
 		Map<String, String> error = new HashMap<String, String>();
@@ -117,5 +116,14 @@ public class JwtTokenUtil {
 				.setSigningKey(secretKey)
 				.parseClaimsJws(token)
 				.getBody();
+	}
+	
+	public String getToken(HttpServletRequest request) {
+		String header = request.getHeader("Authorization");
+		String token = header.split(" ")[1].trim();
+		
+		System.out.println("Access Token : " + token);
+		
+		return token;
 	}
 }

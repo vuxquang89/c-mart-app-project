@@ -25,6 +25,7 @@ public class JpaAuditingConfig {
 			if(authentication == null || !authentication.isAuthenticated()) {
 				return null;
 			}
+			System.out.println("jpa auditing : " + authentication.getName());
 			return Optional.of(authentication.getName());
 		}
 		

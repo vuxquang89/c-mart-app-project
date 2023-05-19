@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,7 @@ import com.example.cmart.app.dto.BookingResponseDTO;
 import com.example.cmart.app.dto.CarDTO;
 import com.example.cmart.app.dto.DriverDTO;
 import com.example.cmart.app.dto.HistoryToPlacesDTO;
+import com.example.cmart.app.dto.RatingRequestDTO;
 import com.example.cmart.app.dto.ResponseDTO;
 import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.entity.CarEntity;
@@ -42,6 +45,7 @@ import com.example.cmart.app.service.BookingService;
 import com.example.cmart.app.service.CarService;
 import com.example.cmart.app.service.CustomerService;
 import com.example.cmart.app.service.DriverService;
+import com.example.cmart.app.service.JwtTokenService;
 import com.example.cmart.app.util.AppConstants;
 import com.example.cmart.app.util.BookingStatus;
 import com.example.cmart.app.util.DriverStatus;
@@ -53,56 +57,62 @@ import antlr.DocBookCodeGenerator;
 public class BookingAPI {
 
 	@Autowired
-	private DistanceConverter convert;
-	
+	private DateTimeConverter dateTimeConvert;
 	@Autowired
-	private BookingConverter bookingConvert;
+	private CustomerService customerService;
 	
 	@Autowired
 	private DriverConverter driverConvert;
 	
 	@Autowired
+	private JwtTokenService jwtService;
+	
+	@Autowired
+	private BookingConverter bookingConvert;
+	
+	@Autowired
 	private DriverService driverService;
+
 	
 	@Autowired
-	private CustomerService customerService;
-	
-	@Autowired
-	private BookingService bookingService;
-	
-	@Autowired
-	private DateTimeConverter dateTimeConvert;
-	
-	@Autowired
-	private CarService carService;
+	private BookingService bookingService;	
 	
 	/**
 	 * sau khi nguoi dung chon diem den, se load ra danh sach cac xe o gan
 	 * @param request nhan toa do bat dau va toa do muon den
 	 * @return danh sach cac xe dang o gan vi tri nguoi dung dang dung
 	 */
+	
 	@PostMapping("/customer/booking/cars")
-	@RolesAllowed("ROLE_USER")
-	public ResponseEntity<?> getBookingDrivers(@RequestBody BookingRequestDTO requestDTO) {
+	public ResponseEntity<?> getBookingDrivers(
+			@RequestBody BookingRequestDTO requestDTO
+			
+			) {
 		List<CarDTO> listCar = bookingService.getCarsInRadius(requestDTO);
 		return ResponseEntity.ok(listCar);
 	}
 	
 	/**
-	 * thuc hien dat xe
+	 * thuc hien chon va dat xe
 	 * @param requestDTO
 	 * @return
 	 */
 	@PostMapping("/customer/booking")
-	public ResponseEntity<BookingDTO> booking(@RequestBody BookingRequestDTO requestDTO){
+	public ResponseEntity<BookingDTO> booking(@RequestBody BookingRequestDTO requestDTO,
+			HttpServletRequest request){
 		try {
 			DriverEntity driverEntity = driverService.findByCarId(requestDTO.getCar().getId()).orElse(null);
+			
 			if(driverEntity != null) {
+				
+				String username = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+				CustomerEntity customer = customerService.findCustomer(username).get();
+				
 				CarEntity carEntity = driverEntity.getCar();
 				BookingEntity bookingEntity = bookingConvert.toEntity(requestDTO);
 				bookingEntity.setStatus(BookingStatus.waitting);
 				bookingEntity.setCar(carEntity);
-				bookingEntity.setCustomer(null);
+				bookingEntity.setCustomer(customer);
 				
 				float totalPrace = bookingService.calTotalPrace(requestDTO.getStartLat(),
 						requestDTO.getStartLng(), driverEntity.getCurrentLocationLat(),
@@ -110,6 +120,7 @@ public class BookingAPI {
 				
 				bookingEntity.setTotalFare(totalPrace);
 				bookingEntity.setStartTime(dateTimeConvert.nowString());
+				
 				BookingDTO bookingDTO = bookingConvert.toDTO(bookingService.save(bookingEntity));
 								
 				driverEntity.setStatus(DriverStatus.receive);
@@ -123,36 +134,41 @@ public class BookingAPI {
 			}
 		}catch(Exception ex) {
 			//return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+			System.out.println(ex.toString());
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	
 	/**
 	 * khi khach hang chon di chuyen
-	 * @return danh sach cac diem da den
+	 * @return danh sach cac diem đã đến
 	 */
+	
 	@GetMapping("/customer/move")
-	public ResponseEntity<?> showHistoryToPlaces(){
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-		String username = userDetails.getUsername();
-		System.out.println("customer move - username : " + username);
-		
-		CustomerEntity customer = customerService.findCustomerByUsername(username).get();
-		List<BookingEntity> listBooking = bookingService.findByCustomer(customer);
-		List<HistoryToPlacesDTO> historyToPlaces = new ArrayList<HistoryToPlacesDTO>();
-		for(BookingEntity book : listBooking) {
-			historyToPlaces.add(bookingConvert.toHistoryDTO(book));
+	public ResponseEntity<?> showHistoryToPlaces(HttpServletRequest request){
+		String emailToken = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+		CustomerEntity customer = customerService.findCustomer(emailToken).orElse(null);
+		if(customer != null) {
+
+			List<BookingEntity> listBooking = bookingService.findByCustomer(customer);
+			List<HistoryToPlacesDTO> historyToPlaces = new ArrayList<HistoryToPlacesDTO>();
+			for(BookingEntity book : listBooking) {
+				historyToPlaces.add(bookingConvert.toHistoryDTO(book));
+			}
+			
+			return ResponseEntity.ok(historyToPlaces);
+		}else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		
-		return ResponseEntity.ok(historyToPlaces);
 	}
+	
 	
 	/**
 	 * huy dat xe
 	 * @param id
 	 * @return
 	 */
+	
 	@PutMapping("/customer/booking/cancel/{id}")
 	public ResponseEntity<?> cancelBooking(@PathVariable("id") long id){
 		BookingEntity bookingEntity = bookingService.cancel(id);
@@ -166,6 +182,7 @@ public class BookingAPI {
 		return ResponseEntity.ok(bookingDTO);
 	}
 	
+	
 	@DeleteMapping("/customer/booking/delete/{id}")
 	public void deleteBooking(@PathVariable("id") long id){
 		bookingService.delete(id);
@@ -175,26 +192,46 @@ public class BookingAPI {
 	 * xem lich su book xe
 	 * @return danh sach cac chuyen di da book
 	 */
+	
 	@GetMapping("/customer/booking/history")
-	public ResponseEntity<?> getHistoryBooking(){
+	public ResponseEntity<?> getHistoryBooking(HttpServletRequest request){
 		List<BookingDTO> historyBooking = new ArrayList<BookingDTO>();
 		
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-		String username = userDetails.getUsername();
-		System.out.println("history booking - username : " + username);
-		
-		CustomerEntity customer = customerService.findCustomerByUsername(username).get();
-		List<BookingEntity> listBooking = bookingService.findByCustomer(customer);
-		
-		for(BookingEntity book : listBooking) {
-			BookingDTO bookingDTO = bookingConvert.toDTO(book);
-			DriverEntity driver = driverService.findByCarId(book.getCar().getId()).get();
-			DriverDTO driverDTO = driverConvert.toDTO(driver);
-			bookingDTO.setDriver(driverDTO);
-			historyBooking.add(bookingDTO);
+		String emailToken = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+		CustomerEntity customer = customerService.findCustomer(emailToken).orElse(null);
+		if(customer != null) {
+			List<BookingEntity> listBooking = bookingService.findByCustomer(customer);
+			
+			for(BookingEntity book : listBooking) {
+				BookingDTO bookingDTO = bookingConvert.toDTO(book);
+				DriverEntity driver = driverService.findByCarId(book.getCar().getId()).get();
+				DriverDTO driverDTO = driverConvert.toDTO(driver);
+				bookingDTO.setDriver(driverDTO);
+				historyBooking.add(bookingDTO);
+			}
+		}else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+		
 		return ResponseEntity.ok(historyBooking);
+	}
+	
+	/**
+	 * xoa lich su dat xe
+	 * @param id
+	 */
+	
+	@DeleteMapping("/customer/booking/history/{id}")
+	public void deleteBookingHistory(@PathVariable Long id) {
+		bookingService.delete(id);
+	}
+	
+
+	@PostMapping("/customer/booking/{id}/rating")
+	public ResponseEntity<?> rating(@PathVariable Long id,
+			@RequestBody RatingRequestDTO ratingRequest){
+		
+		return null;
 	}
 	
 	/*

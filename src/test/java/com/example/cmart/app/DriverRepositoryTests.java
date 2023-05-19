@@ -40,7 +40,7 @@ public class DriverRepositoryTests {
 	
 	@Test
 	public void testAddDriver() {
-		/*
+		
 		CarEntity car = new CarEntity();
 		car.setCarColor("blue");
 		car.setCarModel("honda");
@@ -57,11 +57,11 @@ public class DriverRepositoryTests {
 		driver.setUsername("vanminh");
 		driver.setPhoneNumber("0934845228");
 		driver.setStatus(DriverStatus.waitting);
-		driver.setCurrentLocationLat(16.05419159373633);//
-		driver.setCurrentLocationLng(108.20908001404615);
+		driver.setCurrentLocationLat(15.988734);//
+		driver.setCurrentLocationLng(108.201178);
 		driver.setRating(3);
 		
-		*/
+		
 		CarEntity car2 = new CarEntity();
 		car2.setCarColor("blue");
 		car2.setCarModel("honda");
@@ -78,16 +78,16 @@ public class DriverRepositoryTests {
 		driver2.setUsername("vanhung");
 		driver2.setPhoneNumber("0934234228");
 		driver2.setStatus(DriverStatus.pick_up);
-		driver2.setCurrentLocationLat(16.05419159373633);//
-		driver2.setCurrentLocationLng(108.20908001404615);
+		driver2.setCurrentLocationLat(15.989283);//
+		driver2.setCurrentLocationLng(108.203132);
 		driver2.setRating(3);
 		
 		
-		DriverEntity saveDriver = repo.save(driver2);
-		assertThat(saveDriver).isNotNull();
-		//repo.saveAll(List.of(driver, driver2));
-		//long count = repo.count();
-		//assertEquals(2, count);
+		//DriverEntity saveDriver = repo.save(driver2);
+		//assertThat(saveDriver).isNotNull();
+		repo.saveAll(List.of(driver, driver2));
+		long count = repo.count();
+		assertEquals(2, count);
 	}
 	
 	@Test
@@ -101,10 +101,10 @@ public class DriverRepositoryTests {
 	
 	@Test
 	public void testGetDriverWithCar() {
-		int rating = 4;
+		int rating = 2;
 		String status = "waitting";
-		String carType = "oto";
-		int carSeating = 4;
+		String carType = "motobike";
+		int carSeating = 2;
 		List<String> genders = new ArrayList<String>();
 		genders.add(Gender.male.name());
 		genders.add(Gender.female.name());
@@ -112,5 +112,12 @@ public class DriverRepositoryTests {
 		System.out.println(drivers.size());
 		System.out.println(Arrays.toString(drivers.toArray()));
 		assertThat(drivers).isNotNull();
+	}
+	
+	@Test
+	public void getDriver() {
+		DriverEntity driverEntity = repo.findByCarId(1l).orElse(null);
+		System.out.println(driverEntity.getId());
+		assertThat(driverEntity).isNotNull();
 	}
 }

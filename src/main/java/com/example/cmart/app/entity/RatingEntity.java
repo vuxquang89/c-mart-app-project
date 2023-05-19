@@ -15,8 +15,8 @@ public class RatingEntity extends BaseEntity{
     private DriverEntity driver;
 	
 	@ManyToOne
-	@JoinColumn(name = "customer_id")
-    private CustomerEntity customer;
+	@JoinColumn(name = "booking_id")
+    private BookingEntity booking;
 	
 	@Column(name = "service_attitude")
 	private Integer serviceAttitude; //thai do phuc vu
@@ -81,12 +81,12 @@ public class RatingEntity extends BaseEntity{
 		this.driver = driver;
 	}
 
-	public CustomerEntity getCustomer() {
-		return customer;
+	public BookingEntity getBooking() {
+		return booking;
 	}
 
-	public void setCustomer(CustomerEntity customer) {
-		this.customer = customer;
+	public void setBooking(BookingEntity booking) {
+		this.booking = booking;
 	}
 	
 	

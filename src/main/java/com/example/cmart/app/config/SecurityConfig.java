@@ -21,7 +21,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.cmart.app.jwt.JwtTokenFilter;
+import com.example.cmart.app.service.BookingService;
 import com.example.cmart.app.service.CustomerService;
+
 
 @Configuration
 @EnableWebSecurity
@@ -39,6 +41,12 @@ public class SecurityConfig {
 	
 	@Autowired
 	private CustomerService customerService;
+	/*
+	@Bean
+	public BookingService bookService() {
+		return new BookingService();
+	}
+	*/
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -57,6 +65,7 @@ public class SecurityConfig {
 			}
 		};
 	}
+	
 	
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -77,7 +86,11 @@ public class SecurityConfig {
 		);
 		
 		http.authorizeRequests()
-				.antMatchers("/", "/api/login/**").permitAll()
+				.antMatchers("/", "/api/customer/login/**", 
+						"/api/customer/token/refresh/**", 
+						"/api/customer/register/**"
+						).permitAll()
+				.antMatchers("/api/customer/**","/save/**").hasAuthority("ROLE_USER")
 				.anyRequest().authenticated()
 				.and()
 	            .formLogin().permitAll()

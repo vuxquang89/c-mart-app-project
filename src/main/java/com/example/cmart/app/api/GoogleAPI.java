@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cmart.app.dto.CustomerResponseDTO;
 import com.example.cmart.app.entity.CustomerEntity;
-import com.example.cmart.app.jwt.JwtTokenUtil;
 import com.example.cmart.app.repository.CustomerRepository;
+import com.example.cmart.app.service.JwtTokenService;
 import com.example.cmart.app.util.AuthProvider;
 
 @RestController
@@ -26,7 +26,7 @@ public class GoogleAPI {
 	private CustomerRepository customerRepo;
 	
 	@Autowired
-	private JwtTokenUtil jwtUtil;
+	private JwtTokenService jwtUtil;
 
 	/*
 	@GetMapping()

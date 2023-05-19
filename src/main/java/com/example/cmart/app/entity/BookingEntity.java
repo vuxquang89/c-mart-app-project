@@ -1,6 +1,8 @@
 package com.example.cmart.app.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +10,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.example.cmart.app.util.BookingStatus;
@@ -24,6 +27,10 @@ public class BookingEntity extends BaseEntity{
 	@ManyToOne
 	@JoinColumn(name = "car_id")
 	private CarEntity car;
+	
+	@OneToMany(mappedBy = "booking")
+	private List<RatingEntity> ratings = new ArrayList<>();
+	
 	
 	@Column(name = "start_location_lat")
 	private double startLocationLat;
@@ -57,7 +64,7 @@ public class BookingEntity extends BaseEntity{
 	private BookingStatus status;
 	
 	@Column(name = "booking_time")
-	private Date bookingTime;
+	private String bookingTime;
 	
 	@Column(name = "payment_status")
 	private boolean paymentStatus = false;
@@ -117,11 +124,11 @@ public class BookingEntity extends BaseEntity{
 		this.status = status;
 	}
 
-	public Date getBookingTime() {
+	public String getBookingTime() {
 		return bookingTime;
 	}
 
-	public void setBookingTime(Date bookingTime) {
+	public void setBookingTime(String bookingTime) {
 		this.bookingTime = bookingTime;
 	}
 
@@ -197,5 +204,12 @@ public class BookingEntity extends BaseEntity{
 		this.endAddress = endAddress;
 	}
 	
-	
+	public List<RatingEntity> getRatings() {
+		return ratings;
+	}
+
+	public void setRatings(List<RatingEntity> ratings) {
+		this.ratings = ratings;
+	}
+
 }

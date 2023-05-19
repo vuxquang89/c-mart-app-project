@@ -24,4 +24,19 @@ public class CustomerService implements ImplCustomerService{
 	public Optional<CustomerEntity> findCustomerByUsername(String username) {
 		return customerRepository.findByUsername(username);
 	}
+	
+	@Override
+	public CustomerEntity save(CustomerEntity customer) {
+		return customerRepository.save(customer);
+	}
+	
+	@Override
+	public Optional<CustomerEntity> findById(long id) {
+		return customerRepository.findById(id);
+	}
+	
+	@Override
+	public boolean existsCustomerQuery(String user) {
+		return customerRepository.existsCustomerQuery(user);
+	}
 }

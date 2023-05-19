@@ -11,7 +11,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,27 +30,25 @@ public class CustomerEntity extends BaseEntity implements UserDetails{
 	@OneToMany(mappedBy = "customer")
 	private List<BookingEntity> bookings = new ArrayList<>();
 	
-	@OneToMany(mappedBy = "customer")
-	private List<RatingEntity> ratings = new ArrayList<>();
+	@Column
+	private String fullname;
 	
 	@Column
-	String fullname;
+	private String phone;
 	
-	@Column
-	String phone;
-	
-	@Column
+	@Column(unique = true)
 	private String username;
 	
 	@Email
-	String email;
+	@Column(unique = true)
+	private String email;
 	
 	@Column
-	String password;
+	private String password;
 	@Column
 	private String role;
 	
-	@NotNull
+	@Column
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
 	
@@ -66,7 +63,7 @@ public class CustomerEntity extends BaseEntity implements UserDetails{
 		//for(RoleEntity role : roles) {
 			//authorities.add(new SimpleGrantedAuthority(role.getCode()));
 		//}
-		authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+		authorities.add(new SimpleGrantedAuthority(role));
 		return authorities;
 	}
 
@@ -92,7 +89,7 @@ public class CustomerEntity extends BaseEntity implements UserDetails{
 	
 	@Override
 	public String getUsername() {
-		return null;
+		return username;
 	}
 
 	public String getFullname() {
@@ -145,14 +142,6 @@ public class CustomerEntity extends BaseEntity implements UserDetails{
 
 	public void setBookings(List<BookingEntity> bookings) {
 		this.bookings = bookings;
-	}
-
-	public List<RatingEntity> getRatings() {
-		return ratings;
-	}
-
-	public void setRatings(List<RatingEntity> ratings) {
-		this.ratings = ratings;
 	}
 
 	public String getRole() {
