@@ -156,14 +156,19 @@ public class CustomerAPI {
 	 */
 	@GetMapping("/info")
 	@RolesAllowed("ROLE_USER")
-	public ResponseEntity<?> showInfo(@RequestParam(value = "email", required = false) String email){
-		CustomerInfoDTO customerInfoDTO = new CustomerInfoDTO();
-		
-		if(email != null && email != "") {
-			customerInfoDTO = customerConvert.infoToDTO(customerService.findCustomer(email).get());
+	public ResponseEntity<?> showInfo(HttpServletRequest request){
+		try {
+			String emailToken = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+			
+			CustomerInfoDTO customerInfoDTO = new CustomerInfoDTO();
+			customerInfoDTO = customerConvert.infoToDTO(customerService.findCustomer(emailToken).get());
+			return ResponseEntity.ok(customerInfoDTO);
+		}
+		catch(Exception e) {
+			System.out.println(e.toString());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 		
-		return ResponseEntity.ok(customerInfoDTO);
 	}
 	
 	/**
