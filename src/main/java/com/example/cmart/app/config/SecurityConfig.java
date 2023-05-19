@@ -60,7 +60,7 @@ public class SecurityConfig {
 			@Override
 			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 				
-				return customerService.findCustomer(username)
+				return customerService.findCustomerByEmail(username)
 						.orElseThrow(()->new UsernameNotFoundException("User not found"));
 			}
 		};

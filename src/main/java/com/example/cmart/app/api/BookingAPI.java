@@ -106,7 +106,7 @@ public class BookingAPI {
 			if(driverEntity != null) {
 				
 				String username = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
-				CustomerEntity customer = customerService.findCustomer(username).get();
+				CustomerEntity customer = customerService.findCustomerByEmail(username).get();
 				
 				CarEntity carEntity = driverEntity.getCar();
 				BookingEntity bookingEntity = bookingConvert.toEntity(requestDTO);
@@ -147,7 +147,7 @@ public class BookingAPI {
 	@GetMapping("/customer/move")
 	public ResponseEntity<?> showHistoryToPlaces(HttpServletRequest request){
 		String emailToken = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
-		CustomerEntity customer = customerService.findCustomer(emailToken).orElse(null);
+		CustomerEntity customer = customerService.findCustomerByEmail(emailToken).orElse(null);
 		if(customer != null) {
 
 			List<BookingEntity> listBooking = bookingService.findByCustomer(customer);
@@ -198,7 +198,7 @@ public class BookingAPI {
 		List<BookingDTO> historyBooking = new ArrayList<BookingDTO>();
 		
 		String emailToken = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
-		CustomerEntity customer = customerService.findCustomer(emailToken).orElse(null);
+		CustomerEntity customer = customerService.findCustomerByEmail(emailToken).orElse(null);
 		if(customer != null) {
 			List<BookingEntity> listBooking = bookingService.findByCustomer(customer);
 			

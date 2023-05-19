@@ -11,6 +11,7 @@ import com.example.cmart.app.entity.CustomerEntity;
 public interface CustomerRepository extends JpaRepository<CustomerEntity, Long>{
 
 	Optional<CustomerEntity> findByEmail(String email);
+	Optional<CustomerEntity> findByPhone(String phone);
 	
 	@Query(value = "SELECT * FROM customers c "
 			+ "WHERE c.username = ?1 ",
@@ -21,5 +22,9 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Long>{
 	@Query(value = "SELECT CASE WHEN EXISTS ( SELECT 1 FROM customers c WHERE c.username = :user or c.email = :user) THEN 'true' ELSE 'false' END",
 			nativeQuery = true)
 	boolean existsCustomerQuery(@Param("user") String user);
+	
+	@Query(value = "SELECT CASE WHEN EXISTS ( SELECT 1 FROM customers c WHERE c.phone = :phone) THEN 'true' ELSE 'false' END",
+			nativeQuery = true)
+	boolean existsCustomerQueryPhone(@Param("phone") String phone);
 	
 }

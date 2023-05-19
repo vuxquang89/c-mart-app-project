@@ -19,6 +19,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.util.LinkedMultiValueMap;
@@ -36,10 +37,12 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.cmart.app.converter.CustomerConverter;
 import com.example.cmart.app.dto.CustomerInfoDTO;
+import com.example.cmart.app.dto.CustomerPasswordDTO;
 import com.example.cmart.app.dto.CustomerRegisterDTO;
 import com.example.cmart.app.dto.CustomerRequestDTO;
 import com.example.cmart.app.dto.CustomerResponseDTO;
 import com.example.cmart.app.entity.CustomerEntity;
+import com.example.cmart.app.lib.Password;
 import com.example.cmart.app.service.CustomerService;
 import com.example.cmart.app.service.JwtTokenService;
 import com.example.cmart.app.util.AuthProvider;
@@ -105,7 +108,7 @@ public class CustomerAPI {
 				
 				if(jwtService.validateToken(refreshToken, response)) {
 					String username = jwtService.getUserNameFromJwtSubject(refreshToken);
-					Optional<CustomerEntity> user = customerService.findCustomer(username);
+					Optional<CustomerEntity> user = customerService.findCustomerByEmail(username);
 					String accessToken = jwtService.generateAccessToken(user.get());
 	
 					CustomerResponseDTO res = new CustomerResponseDTO(user.get().getEmail(), accessToken, refreshToken);
@@ -161,7 +164,7 @@ public class CustomerAPI {
 			String emailToken = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
 			
 			CustomerInfoDTO customerInfoDTO = new CustomerInfoDTO();
-			customerInfoDTO = customerConvert.infoToDTO(customerService.findCustomer(emailToken).get());
+			customerInfoDTO = customerConvert.infoToDTO(customerService.findCustomerByEmail(emailToken).get());
 			return ResponseEntity.ok(customerInfoDTO);
 		}
 		catch(Exception e) {
@@ -176,27 +179,75 @@ public class CustomerAPI {
 	 * @param info
 	 * @return
 	 */
-	@PutMapping("/{id}")
+	@PutMapping("/update/info")
 	@RolesAllowed("ROLE_USER")
-	public ResponseEntity<?> updateCustomer(
-			@PathVariable long id,
+	public ResponseEntity<?> updateCustomerInfo(			
 			@RequestBody @Valid CustomerInfoDTO info,
 			HttpServletRequest request){
 		
 		String emailToken = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
-		CustomerEntity customer = customerService.findById(id).orElse(null);
+		CustomerEntity customer = customerService.findCustomerByEmail(emailToken).orElse(null);
 		
-		CustomerInfoDTO infoDto = new CustomerInfoDTO();
-		if(customer != null && emailToken.equals(info.getEmail())) {
-			customer.setFullname(info.getFullname());
-			customer.setPhone(info.getPhone());
-			//customer.setProvider(AuthProvider.local);
-			customer.setUsername(info.getUsername());
+		if(customer != null) {
 			
-			infoDto = customerConvert.infoToDTO(customerService.save(customer));
+			if(!customerService.existsCustomerQueryPhone(info.getPhone())) {
+				CustomerInfoDTO infoDto = new CustomerInfoDTO();
+				customer.setFullname(info.getFullname());
+				customer.setPhone(info.getPhone());
+				
+				infoDto = customerConvert.infoToDTO(customerService.save(customer));
+				return ResponseEntity.ok(infoDto);
+			}else {
+				Map<String, String> mess = new HashMap<>();
+				mess.put("warning", "Phone number is exists!");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mess);
+			}
+			
+		}else {
+			System.out.println("email is not exist");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 		
-		return ResponseEntity.ok(infoDto);
+	}
+	
+	/**
+	 * cập nhật mật khẩu
+	 * @param info
+	 * @param request
+	 * @return
+	 */
+	@PutMapping("/update/password")
+	@RolesAllowed("ROLE_USER")
+	public ResponseEntity<?> updateCustomerPassword(			
+			@RequestBody @Valid CustomerPasswordDTO requestPass,
+			HttpServletRequest request){
+		
+		String emailToken = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+		CustomerEntity customer = customerService.findCustomerByEmail(emailToken).orElse(null);
+		
+		if(customer != null) {
+			if(customer.getPassword() == null && customer.getProvider() == AuthProvider.google) {
+				CustomerInfoDTO infoDto = new CustomerInfoDTO();				
+				customer.setPassword(Password.encoderPassword(requestPass.getNewPassword()));
+				infoDto = customerConvert.infoToDTO(customerService.save(customer));
+				return ResponseEntity.ok(infoDto);
+			}else if(Password.checkPaasword(requestPass.getOldPassword(), customer.getPassword())) {
+				CustomerInfoDTO infoDto = new CustomerInfoDTO();				
+				customer.setPassword(Password.encoderPassword(requestPass.getNewPassword()));
+				infoDto = customerConvert.infoToDTO(customerService.save(customer));
+				return ResponseEntity.ok(infoDto);
+			}else {
+				Map<String, String> mess = new HashMap<>();
+				mess.put("warning", "Password is Incorrect!");
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mess);
+			}
+					
+			
+		}else {
+			System.out.println("email is not exist");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+		
 	}
 	
 	
