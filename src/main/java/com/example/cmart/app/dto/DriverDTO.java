@@ -6,7 +6,7 @@ public class DriverDTO extends AbstractDTO<DriverDTO>{
 	private String fullName;
 	private String phoneNumber;
 	private String gender;
-	private int rating;
+	private float rating;
 	private double currentLat;
 	private double currentLng;
 	private String carColor;
@@ -34,10 +34,10 @@ public class DriverDTO extends AbstractDTO<DriverDTO>{
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	public int getRating() {
+	public float getRating() {
 		return rating;
 	}
-	public void setRating(int rating) {
+	public void setRating(float rating) {
 		this.rating = rating;
 	}
 	public double getCurrentLat() {

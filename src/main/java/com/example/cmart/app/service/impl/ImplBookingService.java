@@ -12,7 +12,9 @@ public interface ImplBookingService {
 	
 	List<CarDTO> getCarsInRadius(BookingRequestDTO request);
 	Optional<BookingEntity> findById(long id);
+	Optional<BookingEntity> findBookingFinishById(long id);
 	List<BookingEntity> findByCustomer(CustomerEntity customer);
+	boolean checkBookingToStatus(String status, Long id);
 	
 	BookingEntity save(BookingEntity bookingEntity);
 	BookingEntity cancel(long id);

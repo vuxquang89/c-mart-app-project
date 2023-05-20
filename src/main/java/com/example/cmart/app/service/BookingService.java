@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.cmart.app.converter.DistanceConverter;
 import com.example.cmart.app.converter.DriverConverter;
@@ -65,8 +64,12 @@ public class BookingService implements ImplBookingService{
 	public BookingEntity save(BookingEntity bookingEntity) {
 		
 		BookingEntity entity = bookingRepository.save(bookingEntity);
-		System.out.println("booking service save : " + entity.getId());
 		return entity;
+	}
+	
+	@Override
+	public Optional<BookingEntity> findBookingFinishById(long id) {
+		return bookingRepository.findBookingFinishById(id);
 	}
 	
 	@Override
@@ -77,6 +80,11 @@ public class BookingService implements ImplBookingService{
 			bookingRepository.save(booking);
 		}
 		return booking;
+	}
+	
+	@Override
+	public boolean checkBookingToStatus(String status, Long id) {
+		return bookingRepository.existsBookingToStatus(status, id);
 	}
 	
 	@Override
@@ -91,7 +99,7 @@ public class BookingService implements ImplBookingService{
 	
 	@Override
 	public void delete(long id) {
-		bookingRepository.deleteById(id);
+		bookingRepository.deleteBookingById(id);
 	}
 	
 	public double getDistance(double startLat, double startLng, double currentLat, double currentLng) {

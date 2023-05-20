@@ -20,6 +20,7 @@ import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.service.BookingService;
 import com.example.cmart.app.service.VNPayService;
 import com.example.cmart.app.util.BookingStatus;
+import com.example.cmart.app.util.PaymentMethod;
 
 @RestController
 @RequestMapping("/api")
@@ -30,6 +31,11 @@ public class VNPayBookingAPI {
 	@Autowired
 	private BookingService bookingService;
 	
+	/**
+	 * khi khách hàng chọn hình thức thanh toán qua vnpay
+	 * @param id
+	 * @return thong tin thanh toán
+	 */
 	@GetMapping("/customer/booking/paymentInfo/{id}")
 	public ResponseEntity<?> getPaymentInfo(@PathVariable("id") long id) {
 		BookingEntity bookingEntity = bookingService.findById(id).orElse(null);
@@ -46,6 +52,12 @@ public class VNPayBookingAPI {
 		}
 	}
 	
+	/**
+	 * khi khách hàng bấm đồng ý thanh toán
+	 * @param paymentInfo
+	 * @param request
+	 * @return link thanh toán vnpay
+	 */
 	@PostMapping("/customer/booking/submitPayment")
 	public ResponseEntity<?> submitPayment(@RequestBody PaymentInfoDTO paymentInfo, HttpServletRequest request) {
 		String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
@@ -56,6 +68,11 @@ public class VNPayBookingAPI {
 		return new ResponseEntity<>(mess, HttpStatus.OK);
 	}
 	
+	/**
+	 * nhận kết quả trả về từ vnpay
+	 * @param request
+	 * @return
+	 */
 	@GetMapping("/customer/vnpay-payment")
 	public ResponseEntity<?> getMapping(HttpServletRequest request){
         int paymentStatus = vnPayService.orderReturn(request);
@@ -75,6 +92,7 @@ public class VNPayBookingAPI {
         	long bookingId = getId(orderInfo);
         	BookingEntity booking = bookingService.findById(bookingId).orElse(null);
         	booking.setPaymentStatus(true);
+        	booking.setPaymentMethod(PaymentMethod.banking);
         	bookingService.save(booking);
         	result.put("result", "paymentsuccess");
         }else {

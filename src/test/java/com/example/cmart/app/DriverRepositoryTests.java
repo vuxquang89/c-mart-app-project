@@ -59,7 +59,7 @@ public class DriverRepositoryTests {
 		driver.setStatus(DriverStatus.waitting);
 		driver.setCurrentLocationLat(15.988734);//
 		driver.setCurrentLocationLng(108.201178);
-		driver.setRating(3);
+		driver.setRating(3f);
 		
 		
 		CarEntity car2 = new CarEntity();
@@ -80,7 +80,7 @@ public class DriverRepositoryTests {
 		driver2.setStatus(DriverStatus.pick_up);
 		driver2.setCurrentLocationLat(15.989283);//
 		driver2.setCurrentLocationLng(108.203132);
-		driver2.setRating(3);
+		driver2.setRating(3f);
 		
 		
 		//DriverEntity saveDriver = repo.save(driver2);

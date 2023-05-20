@@ -88,7 +88,8 @@ public class SecurityConfig {
 		http.authorizeRequests()
 				.antMatchers("/", "/api/customer/login/**", 
 						"/api/customer/token/refresh/**", 
-						"/api/customer/register/**"
+						"/api/customer/register/**",
+						"/api/customer/vnpay-payment/**"
 						).permitAll()
 				.antMatchers("/api/customer/**","/save/**").hasAuthority("ROLE_USER")
 				.anyRequest().authenticated()

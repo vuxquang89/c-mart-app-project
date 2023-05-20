@@ -51,7 +51,7 @@ public class DriverEntity extends BaseEntity{
 	
 	//danh gia
 	@Column
-	private Integer rating;
+	private Float rating;
 	
 	@Column(name = "current_location_lat")
 	private double currentLocationLat;
@@ -119,11 +119,11 @@ public class DriverEntity extends BaseEntity{
 		this.status = status;
 	}
 
-	public Integer getRating() {
+	public Float getRating() {
 		return rating;
 	}
 
-	public void setRating(Integer rating) {
+	public void setRating(Float rating) {
 		this.rating = rating;
 	}
 

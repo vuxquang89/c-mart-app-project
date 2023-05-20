@@ -1,20 +1,15 @@
 package com.example.cmart.app.api;
 
-import java.sql.Driver;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,16 +17,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cmart.app.converter.BookingConverter;
 import com.example.cmart.app.converter.DateTimeConverter;
-import com.example.cmart.app.converter.DistanceConverter;
 import com.example.cmart.app.converter.DriverConverter;
+import com.example.cmart.app.converter.RatingConverter;
 import com.example.cmart.app.dto.BookingDTO;
 import com.example.cmart.app.dto.BookingRequestDTO;
-import com.example.cmart.app.dto.BookingResponseDTO;
 import com.example.cmart.app.dto.CarDTO;
 import com.example.cmart.app.dto.DriverDTO;
 import com.example.cmart.app.dto.HistoryToPlacesDTO;
@@ -41,16 +34,15 @@ import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.entity.CarEntity;
 import com.example.cmart.app.entity.CustomerEntity;
 import com.example.cmart.app.entity.DriverEntity;
+import com.example.cmart.app.entity.RatingEntity;
 import com.example.cmart.app.service.BookingService;
-import com.example.cmart.app.service.CarService;
 import com.example.cmart.app.service.CustomerService;
 import com.example.cmart.app.service.DriverService;
 import com.example.cmart.app.service.JwtTokenService;
-import com.example.cmart.app.util.AppConstants;
+import com.example.cmart.app.service.RatingService;
 import com.example.cmart.app.util.BookingStatus;
 import com.example.cmart.app.util.DriverStatus;
 
-import antlr.DocBookCodeGenerator;
 
 @RestController
 @RequestMapping("/api")
@@ -76,6 +68,11 @@ public class BookingAPI {
 	
 	@Autowired
 	private BookingService bookingService;	
+	
+	@Autowired
+	private RatingService ratingService;
+	@Autowired
+	private RatingConverter ratingConvert;
 	
 	/**
 	 * sau khi nguoi dung chon diem den, se load ra danh sach cac xe o gan
@@ -218,6 +215,7 @@ public class BookingAPI {
 	
 	/**
 	 * xoa lich su dat xe
+	 * chỉ cho phép xóa các với trạng thái finish hoặc cancel
 	 * @param id
 	 */
 	
@@ -226,12 +224,28 @@ public class BookingAPI {
 		bookingService.delete(id);
 	}
 	
-
+	/**
+	 * thuc hien danh gia
+	 * @param id
+	 * @param ratingRequest
+	 * @return
+	 */
 	@PostMapping("/customer/booking/{id}/rating")
 	public ResponseEntity<?> rating(@PathVariable Long id,
 			@RequestBody RatingRequestDTO ratingRequest){
-		
-		return null;
+		BookingEntity booking = bookingService.findBookingFinishById(id).orElse(null); 
+		if(booking != null) {
+			DriverEntity driver = driverService.findByCarId(booking.getCar().getId()).get();
+			RatingEntity rating = ratingConvert.toEntity(ratingRequest, booking, driver);
+			driver.setRating(ratingConvert.toStar(ratingRequest, driver.getRating()));
+			RatingRequestDTO response = ratingConvert.toDTO(ratingService.save(rating));
+			return ResponseEntity.ok(response);
+		}else {
+			Map<String, String> mess = new HashMap<>();
+			mess.put("warning", "The trip is not over yet");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mess);
+		}
+	
 	}
 	
 	/*
