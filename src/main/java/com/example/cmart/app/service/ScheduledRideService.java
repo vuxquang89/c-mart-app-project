@@ -2,6 +2,7 @@ package com.example.cmart.app.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import com.example.cmart.app.converter.DistanceConverter;
 import com.example.cmart.app.converter.DriverConverter;
 import com.example.cmart.app.dto.BookingRequestDTO;
 import com.example.cmart.app.dto.CarDTO;
+import com.example.cmart.app.entity.CarEntity;
 import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.entity.ScheduledRideEntity;
 import com.example.cmart.app.repository.ScheduledRideRepository;
@@ -120,6 +122,16 @@ public class ScheduledRideService implements ImplScheduledRideService{
 	}
 	
 	@Override
+	public Optional<ScheduledRideEntity> findByCustomerId(Long id, Long customerId) {
+		return rideRepository.findByCustomerId(id, customerId);
+	}
+	
+	@Override
+	public void delete(ScheduledRideEntity entity) {
+		rideRepository.delete(entity);
+	}
+	
+	@Override
 	public List<ScheduledRideEntity> findByCustomerId(long id) {
 		return rideRepository.findByCustomerId(id);
 	}
@@ -129,7 +141,25 @@ public class ScheduledRideService implements ImplScheduledRideService{
 		return rideRepository.save(sRideEntity);
 	}
 	
+	@Override
+	public Optional<ScheduledRideEntity> findById(Long id) {
+		return rideRepository.findById(id);
+	}
+	
 	public float calPrace(double distance, float distanceTransfer, float carPrice) {
 		return (float)(((int)distanceTransfer + (int)distance) * carPrice);
+	}
+	
+	public double getDistance(double startLat, double startLng, double currentLat, double currentLng) {
+		return distanceConvert.getDistance(startLat, 
+				startLng, 
+				currentLat, 
+				currentLng);
+	}
+	
+	public float calTotalPrace(double startLat, double startLng, double currentLat, double currentLng,
+			float distanceTransfer, CarEntity car) {
+		double distance = getDistance(startLat, startLng, currentLat, currentLng);
+		return calPrace(distance, distanceTransfer, car.getCarPrice());
 	}
 }

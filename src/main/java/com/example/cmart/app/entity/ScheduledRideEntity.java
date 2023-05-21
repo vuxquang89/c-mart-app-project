@@ -52,7 +52,7 @@ public class ScheduledRideEntity extends BaseEntity{
 	private float distance;
 	
 	@Column(name = "ride_time")
-	private int rideTime;//thoi gian cho quang đường đi xe (seconds)
+	private int rideTime;//thoi gian cho quang đường dự kiến đi xe (seconds)
 
 	public CustomerEntity getCustomer() {
 		return customer;

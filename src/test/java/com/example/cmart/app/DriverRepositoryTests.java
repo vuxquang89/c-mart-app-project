@@ -43,43 +43,43 @@ public class DriverRepositoryTests {
 		
 		CarEntity car = new CarEntity();
 		car.setCarColor("blue");
-		car.setCarModel("honda");
-		car.setCarType("motobike");
-		car.setCarSeating(2);
-		car.setCarPrice(500f);
-		car.setCarPlate("43H-23423");
+		car.setCarModel("honda civic");
+		car.setCarType("car");
+		car.setCarSeating(4);
+		car.setCarPrice(800f);
+		car.setCarPlate("43H-23431");
 		
 		DriverEntity driver = new DriverEntity();
 		driver.setCar(car);
 		driver.setGender(Gender.male);
-		driver.setEmail("vanminh@gmail.com");
-		driver.setFullname("van minh");
-		driver.setUsername("vanminh");
-		driver.setPhoneNumber("0934845228");
+		driver.setEmail("hongduc@gmail.com");
+		driver.setFullname("hong duc");
+		driver.setUsername("hongduc");
+		driver.setPhoneNumber("0934834564");
 		driver.setStatus(DriverStatus.waitting);
-		driver.setCurrentLocationLat(15.988734);//
-		driver.setCurrentLocationLng(108.201178);
-		driver.setRating(3f);
+		driver.setCurrentLocationLat(16.044750);//, 108.209843
+		driver.setCurrentLocationLng(108.209843);
+		driver.setRating(4f);
 		
 		
 		CarEntity car2 = new CarEntity();
-		car2.setCarColor("blue");
+		car2.setCarColor("white");
 		car2.setCarModel("honda");
 		car2.setCarType("motobike");
 		car2.setCarSeating(2);
 		car2.setCarPrice(500f);
-		car2.setCarPlate("92H1-34423");
+		car2.setCarPlate("47H1-45632");
 		
 		DriverEntity driver2 = new DriverEntity();
 		driver2.setCar(car2);
-		driver2.setGender(Gender.male);
-		driver2.setEmail("vanhung@gmail.com");
-		driver2.setFullname("van hung");
-		driver2.setUsername("vanhung");
-		driver2.setPhoneNumber("0934234228");
-		driver2.setStatus(DriverStatus.pick_up);
-		driver2.setCurrentLocationLat(15.989283);//
-		driver2.setCurrentLocationLng(108.203132);
+		driver2.setGender(Gender.female);
+		driver2.setEmail("thihong@gmail.com");
+		driver2.setFullname("huynh thi hong");
+		driver2.setUsername("thihong");
+		driver2.setPhoneNumber("0903882994");
+		driver2.setStatus(DriverStatus.waitting);
+		driver2.setCurrentLocationLat(16.047874);//, 
+		driver2.setCurrentLocationLng(108.209423);
 		driver2.setRating(3f);
 		
 		

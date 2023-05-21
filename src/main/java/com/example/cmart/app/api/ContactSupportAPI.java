@@ -6,20 +6,19 @@ import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cmart.app.dto.ContactSupportDTO;
+import com.example.cmart.app.entity.CustomerEntity;
+import com.example.cmart.app.service.CustomerService;
+import com.example.cmart.app.service.JwtTokenService;
 import com.example.cmart.app.service.MailService;
 
 @RestController
@@ -28,18 +27,22 @@ public class ContactSupportAPI {
 
 	@Autowired
 	private MailService mailService;
+	@Autowired
+	private CustomerService customerService;
+	
+	@Autowired
+	private JwtTokenService jwtService;
 	
 	@PostMapping("/customer/contact")
 	@RolesAllowed("ROLE_USER")
-	public ResponseEntity<?> submitContact(@RequestBody ContactSupportDTO contact) throws UnsupportedEncodingException, MessagingException{
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
+	public ResponseEntity<?> submitContact(@RequestBody ContactSupportDTO contact,
+			HttpServletRequest request) throws UnsupportedEncodingException, MessagingException{
 		
-		String username = userDetails.getUsername();
-		
-		System.out.println("contact support - user name : " + username);
+		String username = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+		CustomerEntity customer = customerService.findCustomerByEmail(username).get();
 		
 		try {
+			contact.setEmail(customer.getEmail());
 			boolean sendMail = mailService.sendEmail(contact);
 			Map<String, String> mess = new HashMap<String, String>();
 			String message = "";

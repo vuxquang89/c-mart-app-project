@@ -109,6 +109,7 @@ public class BookingAPI {
 				BookingEntity bookingEntity = bookingConvert.toEntity(requestDTO);
 				bookingEntity.setStatus(BookingStatus.waitting);
 				bookingEntity.setCar(carEntity);
+				bookingEntity.setBookingTime(dateTimeConvert.nowString());
 				bookingEntity.setCustomer(customer);
 				
 				float totalPrace = bookingService.calTotalPrace(requestDTO.getStartLat(),
@@ -245,7 +246,7 @@ public class BookingAPI {
 			mess.put("warning", "The trip is not over yet");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mess);
 		}
-	
+		 
 	}
 	
 	/*
