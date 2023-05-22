@@ -54,7 +54,7 @@ public class JwtTokenService {
 	 */
 	public String generateAccessToken(DriverEntity user) {
 		return Jwts.builder()
-				.setSubject(user.getId()+ "," + user.getEmail() +","+TypeUser.DRIVER.name())
+				.setSubject(user.getId()+ "," + user.getPhoneNumber() +","+TypeUser.DRIVER.name())
 				.setIssuer("Bearer")
 				.claim("roles", "ROLE_USER")
 				.setIssuedAt(new Date())
@@ -82,7 +82,7 @@ public class JwtTokenService {
 	 */
 	public String generateRefreshToken(DriverEntity user) {
 		return Jwts.builder()
-				.setSubject(user.getId() +","+user.getEmail()+","+TypeUser.DRIVER.name())
+				.setSubject(user.getId() +","+user.getPhoneNumber()+","+TypeUser.DRIVER.name())
 				.setIssuer("Bearer")
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + AppConstants.EXPIRE_DURATION_REFRESH_TOKEN))
@@ -128,6 +128,7 @@ public class JwtTokenService {
 		Claims claims = parseClaims(token);
 		String subject = (String)claims.get(Claims.SUBJECT);
 		String[] jwtSubject = subject.split(",");
+		
 		return jwtSubject[1];
 		
 	}

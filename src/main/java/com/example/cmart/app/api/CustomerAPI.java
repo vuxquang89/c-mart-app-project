@@ -39,6 +39,7 @@ import com.example.cmart.app.lib.Password;
 import com.example.cmart.app.service.CustomerService;
 import com.example.cmart.app.service.JwtTokenService;
 import com.example.cmart.app.util.AuthProvider;
+import com.example.cmart.app.util.TypeUser;
 
 @RestController
 @RequestMapping("/api/customer")
@@ -65,7 +66,7 @@ public class CustomerAPI {
 	public ResponseEntity<?> login(@RequestBody @Valid CustomerRequestDTO request){
 		try {
 			Authentication authentication = authManager.authenticate(
-					new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+					new UsernamePasswordAuthenticationToken(request.getEmail()+","+TypeUser.CUSTOMER, request.getPassword()));
 			
 			CustomerEntity user = (CustomerEntity)authentication.getPrincipal();
 			

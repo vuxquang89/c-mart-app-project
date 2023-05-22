@@ -104,7 +104,6 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 				System.out.println("role : " + roleName);
 				user.setRole(roleName.trim());
 			}
-			
 
 			return user;
 			

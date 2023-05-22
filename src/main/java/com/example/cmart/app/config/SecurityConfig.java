@@ -20,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.example.cmart.app.jwt.JwtTokenFilter;
 import com.example.cmart.app.service.CustomerService;
+import com.example.cmart.app.service.DriverService;
+import com.example.cmart.app.util.TypeUser;
 
 
 @Configuration
@@ -38,6 +40,9 @@ public class SecurityConfig {
 	
 	@Autowired
 	private CustomerService customerService;
+	
+	@Autowired
+	private DriverService driverService;
 	/*
 	@Bean
 	public BookingService bookService() {
@@ -53,12 +58,18 @@ public class SecurityConfig {
 	@Bean
 	public UserDetailsService userDetailsService() {
 		return new UserDetailsService() {
-			
-			@Override
-			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 				
-				return customerService.findCustomerByEmail(username)
-						.orElseThrow(()->new UsernameNotFoundException("User not found"));
+			@Override
+			public UserDetails loadUserByUsername(String userlogin) throws UsernameNotFoundException {
+				System.out.println("userdetails service load");
+				String[] userInfo = userlogin.split(","); 
+				if(userInfo[1].equals(TypeUser.CUSTOMER.name())) {
+					return customerService.findCustomerByEmail(userInfo[0])
+							.orElseThrow(()->new UsernameNotFoundException("User " + userInfo[0] + " not found"));
+				}else {
+					return driverService.findByPhoneNumber(userInfo[0])
+							.orElseThrow(()-> new UsernameNotFoundException("Phone " + userInfo[0] + " not found"));
+				}
 			}
 		};
 	}

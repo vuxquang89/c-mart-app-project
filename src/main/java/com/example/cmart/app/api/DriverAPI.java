@@ -34,6 +34,8 @@ import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.service.CarService;
 import com.example.cmart.app.service.DriverService;
 import com.example.cmart.app.service.JwtTokenService;
+import com.example.cmart.app.util.DriverStatus;
+import com.example.cmart.app.util.TypeUser;
 
 @RestController
 @RequestMapping("/api/driver")
@@ -57,13 +59,28 @@ public class DriverAPI {
 	@Autowired
 	private CarConverter carConvert;
 
+	/**
+	 * lái xe đăng nhập
+	 * @param request
+	 * @return
+	 */
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody @Valid DriverLoginRequestDTO request){
 		try {
+			
 			Authentication authentication = authManager.authenticate(
-					new UsernamePasswordAuthenticationToken(request.getPhoneNumber(), request.getPassword()));
+					new UsernamePasswordAuthenticationToken(request.getPhoneNumber()+","+TypeUser.DRIVER, request.getPassword()));
 			
 			DriverEntity user = (DriverEntity)authentication.getPrincipal();
+			
+			if(user.getStatus().equals(DriverStatus.off)) {
+				user.setStatus(DriverStatus.waitting);
+			}
+			
+			user.setCurrentLocationLat(request.getCurrentLocationLat());
+			user.setCurrentLocationLng(request.getCurrentLocationLng());
+			
+			user = driverService.save(user);
 			
 			String accessToken = jwtService.generateAccessToken(user);
 			String refreshToken = jwtService.generateRefreshToken(user);
@@ -73,6 +90,7 @@ public class DriverAPI {
 			return ResponseEntity.ok(response);
 			
 		}catch(BadCredentialsException ex) {
+			System.out.println(ex.toString());
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 		
@@ -90,7 +108,9 @@ public class DriverAPI {
 				
 				if(jwtService.validateToken(refreshToken, response)) {
 					String phone = jwtService.getUserNameFromJwtSubject(refreshToken);
+					System.out.println("phone " + phone);
 					DriverEntity user = driverService.findByPhoneNumber(phone).get();
+					System.out.println("user id " + user.getId());
 					String accessToken = jwtService.generateAccessToken(user);
 	
 					CustomerResponseDTO res = new CustomerResponseDTO(user.getPhoneNumber(), user.getUsername(), accessToken, refreshToken);
@@ -101,13 +121,18 @@ public class DriverAPI {
 				
 				
 			}catch(Exception ex) {
-				
+				System.out.println(ex.toString());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 			}
 			 
 		}
 	}
 	
+	/**
+	 * đăng ký tìa khoản cho lái xe
+	 * @param driverDTO
+	 * @return
+	 */
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@RequestBody @Valid DriverRegisterDTO driverDTO){
 		boolean check = false;
@@ -136,6 +161,7 @@ public class DriverAPI {
 		
 		driver.setCar(carEntity);
 		driver.setRole("ROLE_DRIVER");
+		driver.setStatus(DriverStatus.off);
 		driver.setRating(3f);
 		driver = driverService.save(driver);
 		
