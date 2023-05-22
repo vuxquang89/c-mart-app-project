@@ -1,11 +1,8 @@
 package com.example.cmart.app.api;
 
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,7 +58,7 @@ public class GoogleAPI {
 		String refreshToken = jwtUtil.generateRefreshToken(user);
 		
 		
-		CustomerResponseDTO response = new CustomerResponseDTO(user.getEmail(), accessToken, refreshToken);
+		CustomerResponseDTO response = new CustomerResponseDTO(user.getEmail(),user.getUsername(), accessToken, refreshToken);
 		return ResponseEntity.ok(response);
     }
 	

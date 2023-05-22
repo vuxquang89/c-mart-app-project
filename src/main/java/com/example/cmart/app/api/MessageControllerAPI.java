@@ -2,13 +2,10 @@ package com.example.cmart.app.api;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -38,15 +35,11 @@ public class MessageControllerAPI {
 	public void sendMessage(@DestinationVariable String to, 
 			MessageDTO message) {
 		
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-		String username = userDetails.getUsername();
-		System.out.println("user name : " + username); 
-		
+	
 		System.out.println("Handling send message: " + message + " to " + to);
 		
 		ChatMessageEntity chatMessageEntity = messageConvert.toEntity(message);
-		chatMessageEntity.setUsername(username);
+		chatMessageEntity.setUsername(message.getFromLogin());
 		chatMessageService.save(chatMessageEntity);
 		wsService.notifyFrontend(to, message);
 	}

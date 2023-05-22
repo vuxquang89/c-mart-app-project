@@ -19,4 +19,9 @@ public class CarService implements ImplCarService{
 	public Optional<CarEntity> findById(Long id) {
 		return carRepo.findById(id);
 	}
+	
+	@Override
+	public boolean existsByCarPlate(String plate) {
+		return carRepo.existsByCarPlate(plate);
+	}
 }

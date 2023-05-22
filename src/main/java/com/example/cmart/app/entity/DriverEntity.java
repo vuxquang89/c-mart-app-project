@@ -1,6 +1,7 @@
 package com.example.cmart.app.entity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -15,12 +16,21 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.example.cmart.app.util.DriverStatus;
 import com.example.cmart.app.util.Gender;
 
 @Entity
 @Table(name = "drivers")
-public class DriverEntity extends BaseEntity{
+public class DriverEntity extends BaseEntity implements UserDetails{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "car_id", referencedColumnName = "id")
@@ -32,16 +42,17 @@ public class DriverEntity extends BaseEntity{
 	@Column
 	private String fullname;
 	
-	@Column
+	@Column(unique = true)
 	private String username;
 	
 	@Email
+	@Column(unique = true)
 	private String email;
 	
 	@Column
 	private String password;
 	
-	@Column(name = "phone_number")
+	@Column(unique = true,name = "phone_number")
     @Size(max = 15)
     private String phoneNumber;
 	
@@ -62,6 +73,11 @@ public class DriverEntity extends BaseEntity{
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
 	private DriverStatus status;
+	
+	@Column
+	private String role;
+	
+
 
 	public String getFullname() {
 		return fullname;
@@ -69,10 +85,6 @@ public class DriverEntity extends BaseEntity{
 
 	public void setFullname(String fullname) {
 		this.fullname = fullname;
-	}
-
-	public String getUsername() {
-		return username;
 	}
 
 	public void setUsername(String username) {
@@ -158,6 +170,46 @@ public class DriverEntity extends BaseEntity{
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+		authorities.add(new SimpleGrantedAuthority(role));
+		return authorities;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+	
+	@Override
+	public String getUsername() {
+		return username; 
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 	
 }

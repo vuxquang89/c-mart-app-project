@@ -2,9 +2,7 @@ package com.example.cmart.app.api;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -18,22 +16,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+
 
 import com.example.cmart.app.converter.CustomerConverter;
 import com.example.cmart.app.dto.CustomerInfoDTO;
@@ -79,7 +72,7 @@ public class CustomerAPI {
 			String accessToken = jwtService.generateAccessToken(user);
 			String refreshToken = jwtService.generateRefreshToken(user);
 			
-			CustomerResponseDTO response = new CustomerResponseDTO(user.getEmail(), accessToken, refreshToken);
+			CustomerResponseDTO response = new CustomerResponseDTO(user.getEmail(), user.getUsername(), accessToken, refreshToken);
 			
 			return ResponseEntity.ok(response);
 			
@@ -108,10 +101,10 @@ public class CustomerAPI {
 				
 				if(jwtService.validateToken(refreshToken, response)) {
 					String username = jwtService.getUserNameFromJwtSubject(refreshToken);
-					Optional<CustomerEntity> user = customerService.findCustomerByEmail(username);
-					String accessToken = jwtService.generateAccessToken(user.get());
+					CustomerEntity user = customerService.findCustomerByEmail(username).get();
+					String accessToken = jwtService.generateAccessToken(user);
 	
-					CustomerResponseDTO res = new CustomerResponseDTO(user.get().getEmail(), accessToken, refreshToken);
+					CustomerResponseDTO res = new CustomerResponseDTO(user.getEmail(), user.getUsername(), accessToken, refreshToken);
 					return ResponseEntity.ok(res);
 				}else {
 					return ResponseEntity.ok().body("You need to login again!");
@@ -149,7 +142,7 @@ public class CustomerAPI {
 		
 		String accessToken = jwtService.generateAccessToken(saveCustomer);
 		String refreshToken = jwtService.generateRefreshToken(saveCustomer);
-		return ResponseEntity.ok(new CustomerResponseDTO(customerDTO.getEmail(), accessToken, refreshToken));
+		return ResponseEntity.ok(new CustomerResponseDTO(customerDTO.getEmail(),saveCustomer.getUsername(), accessToken, refreshToken));
 		
 	}
 	

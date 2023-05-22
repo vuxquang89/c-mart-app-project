@@ -4,7 +4,10 @@ import org.springframework.stereotype.Component;
 
 import com.example.cmart.app.dto.CarDTO;
 import com.example.cmart.app.dto.DriverDTO;
+import com.example.cmart.app.dto.DriverRegisterDTO;
 import com.example.cmart.app.entity.DriverEntity;
+import com.example.cmart.app.lib.Password;
+import com.example.cmart.app.util.Gender;
 
 @Component
 public class DriverConverter {
@@ -37,5 +40,16 @@ public class DriverConverter {
 		dto.setCarType(entity.getCar().getCarType());
 		
 		return dto;
+	}
+	
+	public DriverEntity toEntity(DriverRegisterDTO dto) {
+		DriverEntity entity = new DriverEntity();
+		entity.setFullname(dto.getFullname());
+		entity.setEmail(dto.getEmail());
+		entity.setGender(Gender.valueOf(dto.getGender()));
+		entity.setPhoneNumber(dto.getPhone());
+		entity.setPassword(Password.encoderPassword(dto.getPassword()));
+		entity.setUsername(dto.getUsername());
+		return entity;
 	}
 }

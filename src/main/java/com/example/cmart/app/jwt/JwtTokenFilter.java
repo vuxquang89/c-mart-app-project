@@ -16,9 +16,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.cmart.app.entity.BaseEntity;
 import com.example.cmart.app.entity.CustomerEntity;
+import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.entity.RoleEntity;
 import com.example.cmart.app.service.JwtTokenService;
+import com.example.cmart.app.util.TypeUser;
 
 import io.jsonwebtoken.Claims;
 
@@ -32,7 +35,9 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		if(request.getServletPath().equals("/api/customer/login") || 
-				request.getServletPath().equals("/api/customer/token/refresh")) {
+				request.getServletPath().equals("/api/customer/token/refresh") ||
+				request.getServletPath().equals("/api/driver/login") || 
+				request.getServletPath().equals("/api/driver/token/refresh")) {
 			filterChain.doFilter(request, response);
 			return;
 		}else {
@@ -72,32 +77,68 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 	}
 
 	private UserDetails getUserDetails(String accessToken) {
-		CustomerEntity user = new CustomerEntity();
+		//CustomerEntity user = new CustomerEntity();
+		//UserDetails user = null;
 		Claims claims = jwtUtil.parseClaims(accessToken);
 		String subject = (String)claims.get(Claims.SUBJECT);
-		String roles = (String)claims.get("roles");
 		
-		System.out.println("Claim Roles: "+roles);
-		
-		roles = roles.replace("[", "").replace("]", "");
-		
-		String[] roleNames = roles.split(",");
-		
-		for(String roleName : roleNames) {
-			System.out.println("role : " + roleName);
-			user.setRole(roleName.trim());
+		String[] jwtSubject = subject.split(",");
+		if(jwtSubject[2].equals(TypeUser.CUSTOMER.name())) {
+			System.out.println(jwtSubject[2]);
+			CustomerEntity user = new CustomerEntity();
+			
+			user.setId(Long.parseLong(jwtSubject[0]));
+			
+			//user.setEmail(jwtSubject[1]);
+			user.setUsername(jwtSubject[1]);
+			
+			String roles = (String)claims.get("roles");
+			
+			System.out.println("Claim Roles: "+roles);
+			
+			roles = roles.replace("[", "").replace("]", "");
+			
+			String[] roleNames = roles.split(",");
+			
+			for(String roleName : roleNames) {
+				System.out.println("role : " + roleName);
+				user.setRole(roleName.trim());
+			}
+			
+
+			return user;
+			
+		}else if(jwtSubject[2].equals(TypeUser.DRIVER.name())){
+			System.out.println(jwtSubject[2]);
+			DriverEntity user = new DriverEntity();
+			
+			user.setId(Long.parseLong(jwtSubject[0]));
+			
+			//user.setEmail(jwtSubject[1]);
+			user.setUsername(jwtSubject[1]);
+			
+			String roles = (String)claims.get("roles");
+			
+			System.out.println("Claim Roles: "+roles);
+			
+			roles = roles.replace("[", "").replace("]", "");
+			
+			String[] roleNames = roles.split(",");
+			
+			for(String roleName : roleNames) {
+				System.out.println("role : " + roleName);
+				user.setRole(roleName.trim());
+			}
+			
+			return user;
 		}
 		
+		return null;
 		//String[] subjectArray = jwtUtil.getSubject(accessToken).split(",");
 		//user.setId(Long.parseLong(subjectArray[0]));
 		//user.setUsername(subjectArray[1]);
-		String[] jwtSubject = subject.split(",");
-		user.setId(Long.parseLong(jwtSubject[0]));
 		
-		//user.setEmail(jwtSubject[1]);
-		user.setUsername(jwtSubject[1]);
 		
-		return user;
 	}
 
 	private boolean hasAuthorizationHeader(HttpServletRequest request) {

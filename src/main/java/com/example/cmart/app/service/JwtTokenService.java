@@ -8,14 +8,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.example.cmart.app.entity.CustomerEntity;
+import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.util.AppConstants;
+import com.example.cmart.app.util.TypeUser;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +38,23 @@ public class JwtTokenService {
 	 */
 	public String generateAccessToken(CustomerEntity user) {
 		return Jwts.builder()
-				.setSubject(user.getId()+ "," + user.getEmail())
+				.setSubject(user.getId()+ "," + user.getEmail()+","+TypeUser.CUSTOMER.name())
+				.setIssuer("Bearer")
+				.claim("roles", "ROLE_USER")
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + AppConstants.EXPIRE_DURATION_ACCESS_TOKEN))//thoi gian het han
+				.signWith(SignatureAlgorithm.HS512, secretKey)//tao chu ky
+				.compact();
+	}
+	
+	/**
+	 * tao access token cho lai xe
+	 * @param user
+	 * @return chuoi access
+	 */
+	public String generateAccessToken(DriverEntity user) {
+		return Jwts.builder()
+				.setSubject(user.getId()+ "," + user.getEmail() +","+TypeUser.DRIVER.name())
 				.setIssuer("Bearer")
 				.claim("roles", "ROLE_USER")
 				.setIssuedAt(new Date())
@@ -53,7 +68,21 @@ public class JwtTokenService {
 	 */
 	public String generateRefreshToken(CustomerEntity user) {
 		return Jwts.builder()
-				.setSubject(user.getId() +","+user.getEmail())
+				.setSubject(user.getId() +","+user.getEmail()+","+TypeUser.CUSTOMER.name())
+				.setIssuer("Bearer")
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + AppConstants.EXPIRE_DURATION_REFRESH_TOKEN))
+				.signWith(SignatureAlgorithm.HS512, secretKey)
+				.compact();
+	}
+	/**
+	 * tao refresh token cho lai xe
+	 * @param user
+	 * @return chuoi refresh token
+	 */
+	public String generateRefreshToken(DriverEntity user) {
+		return Jwts.builder()
+				.setSubject(user.getId() +","+user.getEmail()+","+TypeUser.DRIVER.name())
 				.setIssuer("Bearer")
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + AppConstants.EXPIRE_DURATION_REFRESH_TOKEN))

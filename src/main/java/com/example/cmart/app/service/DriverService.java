@@ -31,4 +31,21 @@ public class DriverService implements ImplDriverService{
 	public DriverEntity save(DriverEntity driver) {
 		return driverRepository.save(driver);
 	}
+	
+	@Override
+	public Optional<DriverEntity> findByPhoneNumber(String phone) {
+		return driverRepository.findByPhoneNumber(phone);
+	}
+	
+	@Override
+	public boolean existsByEmail(String email) {
+		return driverRepository.existsByEmail(email);
+	}
+	@Override
+	public boolean existsByPhone(String phone) {
+		return driverRepository.existsByPhone(phone);
+	}@Override
+	public boolean existsByUsename(String username) {
+		return driverRepository.existsByUsername(username);
+	}
 }

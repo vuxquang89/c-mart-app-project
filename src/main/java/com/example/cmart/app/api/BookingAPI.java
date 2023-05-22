@@ -29,7 +29,6 @@ import com.example.cmart.app.dto.CarDTO;
 import com.example.cmart.app.dto.DriverDTO;
 import com.example.cmart.app.dto.HistoryToPlacesDTO;
 import com.example.cmart.app.dto.RatingRequestDTO;
-import com.example.cmart.app.dto.ResponseDTO;
 import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.entity.CarEntity;
 import com.example.cmart.app.entity.CustomerEntity;

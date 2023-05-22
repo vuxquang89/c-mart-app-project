@@ -33,7 +33,7 @@ public class CustomerEntity extends BaseEntity implements UserDetails{
 	@Column
 	private String fullname;
 	
-	@Column
+	@Column(unique = true)
 	private String phone;
 	
 	@Column(unique = true)

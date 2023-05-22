@@ -12,5 +12,10 @@ public interface ImplDriverService {
 	
 	Optional<DriverEntity> findByCarId(Long carID);
 	
+	Optional<DriverEntity> findByPhoneNumber(String phone);
+	boolean existsByPhone(String phone);
+	boolean existsByEmail(String email);
+	boolean existsByUsename(String username);
+	
 	DriverEntity save(DriverEntity driver);
 }
