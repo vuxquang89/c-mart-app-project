@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ import com.example.cmart.app.dto.CarDTO;
 import com.example.cmart.app.dto.DriverBookingResponseDTO;
 import com.example.cmart.app.dto.DriverDTO;
 import com.example.cmart.app.dto.HistoryToPlacesDTO;
+import com.example.cmart.app.dto.PaymentMethodDTO;
 import com.example.cmart.app.dto.RatingRequestDTO;
 import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.entity.CarEntity;
@@ -42,6 +44,7 @@ import com.example.cmart.app.service.JwtTokenService;
 import com.example.cmart.app.service.RatingService;
 import com.example.cmart.app.util.BookingStatus;
 import com.example.cmart.app.util.DriverStatus;
+import com.example.cmart.app.util.PaymentMethod;
 
 
 @RestController
@@ -336,7 +339,49 @@ public class BookingAPI {
 			DriverBookingResponseDTO dto = driverConvert.toDTOBooking(booking);
 			
 			return ResponseEntity.ok(dto);
+		}else {
+			Map<String, String> mess = new HashMap<>();
+			mess.put("warning", "Driver not found");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mess);
 		}
-		return null;
+	}
+	
+	/**
+	 * lái xe các nhận chọn hình thức thanh toán
+	 * @param id : booking id
+	 * @param paymentMethod
+	 * @param request
+	 * @return
+	 */
+	@PostMapping("/driver/booking/{id}/payment")
+	public ResponseEntity<?> activePayment(
+			@PathVariable Long id,
+			@RequestBody @Valid PaymentMethodDTO paymentMethod,
+			HttpServletRequest request){
+		try {
+			String driverPhone = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+			DriverEntity driver = driverService.findByPhoneNumber(driverPhone).orElse(null);
+			Map<String, String> mess = new HashMap<>();
+			if(driver != null){
+				BookingEntity booking = bookingService.findById(id).get();
+				
+				if(paymentMethod.getPaymentMethod().equals(PaymentMethod.money.name())) {
+					booking.setPaymentStatus(true);				
+				}
+				booking.setPaymentMethod(PaymentMethod.valueOf(paymentMethod.getPaymentMethod()));
+				
+				booking = bookingService.save(booking);
+				mess.put("result", "Success!");
+				
+				return ResponseEntity.ok(mess);
+			}else {
+				
+				mess.put("warning", "Driver not found");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mess);
+			}
+		}
+		catch(Exception ex) {
+			return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).build();
+		}
 	}
 }
