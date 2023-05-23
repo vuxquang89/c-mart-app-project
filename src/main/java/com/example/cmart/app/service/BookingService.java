@@ -68,6 +68,11 @@ public class BookingService implements ImplBookingService{
 	}
 	
 	@Override
+	public List<BookingEntity> findByDriverId(Long driverId) {
+		return bookingRepository.findByDriverId(driverId);
+	}
+	
+	@Override
 	public Optional<BookingEntity> findBookingFinishById(long id) {
 		return bookingRepository.findBookingFinishById(id);
 	}

@@ -56,7 +56,7 @@ public class JwtTokenService {
 		return Jwts.builder()
 				.setSubject(user.getId()+ "," + user.getPhoneNumber() +","+TypeUser.DRIVER.name())
 				.setIssuer("Bearer")
-				.claim("roles", "ROLE_USER")
+				.claim("roles", "ROLE_DRIVER")
 				.setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + AppConstants.EXPIRE_DURATION_ACCESS_TOKEN))//thoi gian het han
 				.signWith(SignatureAlgorithm.HS512, secretKey)//tao chu ky

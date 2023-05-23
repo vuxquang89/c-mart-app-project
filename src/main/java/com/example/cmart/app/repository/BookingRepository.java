@@ -19,6 +19,11 @@ public interface BookingRepository extends JpaRepository<BookingEntity, Long>{
 
 	List<BookingEntity> findByCustomer(CustomerEntity customer);
 	
+	@Query(value = "select * from bookings b join drivers d on b.car_id = d.car_id "
+			+ "where d.id = ?1 ",
+			nativeQuery = true)
+	List<BookingEntity> findByDriverId(Long driverId);
+	
 	@Query(value = "select * from bookings b where b.id = ?1 and b.status = 'finish'",
 			nativeQuery = true)
 	Optional<BookingEntity> findBookingFinishById(long id);

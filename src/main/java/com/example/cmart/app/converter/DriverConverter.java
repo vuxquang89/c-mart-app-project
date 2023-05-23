@@ -3,8 +3,10 @@ package com.example.cmart.app.converter;
 import org.springframework.stereotype.Component;
 
 import com.example.cmart.app.dto.CarDTO;
+import com.example.cmart.app.dto.DriverBookingResponseDTO;
 import com.example.cmart.app.dto.DriverDTO;
 import com.example.cmart.app.dto.DriverRegisterDTO;
+import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.lib.Password;
 import com.example.cmart.app.util.Gender;
@@ -39,6 +41,23 @@ public class DriverConverter {
 		dto.setCarSeating(entity.getCar().getCarSeating());
 		dto.setCarType(entity.getCar().getCarType());
 		
+		return dto;
+	}
+	
+	public DriverBookingResponseDTO toDTOBooking(BookingEntity booking) {
+		DriverBookingResponseDTO dto = new DriverBookingResponseDTO();
+		if(booking.getId() != null) {
+			dto.setId(booking.getId());
+		}
+		
+		dto.setCustomerName(booking.getCustomer().getFullname());
+		dto.setCustomerPhone(booking.getCustomer().getPhone());
+		dto.setStartLocationLat(booking.getStartLocationLat());
+		dto.setStartLocationLng(booking.getStartLocationLng());
+		dto.setEndLocationLat(booking.getEndLocationLat());
+		dto.setEndLocationLng(booking.getEndLocationLng());
+		dto.setTotalFrice(booking.getTotalFare());
+		dto.setStartTime(booking.getStartTime());
 		return dto;
 	}
 	

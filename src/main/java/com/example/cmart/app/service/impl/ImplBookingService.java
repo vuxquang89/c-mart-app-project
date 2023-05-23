@@ -14,6 +14,8 @@ public interface ImplBookingService {
 	Optional<BookingEntity> findById(long id);
 	Optional<BookingEntity> findBookingFinishById(long id);
 	List<BookingEntity> findByCustomer(CustomerEntity customer);
+	
+	List<BookingEntity> findByDriverId(Long driverId);
 	boolean checkBookingToStatus(String status, Long id);
 	
 	BookingEntity save(BookingEntity bookingEntity);
