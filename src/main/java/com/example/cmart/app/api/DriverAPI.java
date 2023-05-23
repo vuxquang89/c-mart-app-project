@@ -1,9 +1,7 @@
 package com.example.cmart.app.api;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,15 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.cmart.app.converter.CarConverter;
 import com.example.cmart.app.converter.DriverConverter;
 import com.example.cmart.app.dto.CustomerResponseDTO;
-import com.example.cmart.app.dto.DriverBookingResponseDTO;
 import com.example.cmart.app.dto.DriverDTO;
 import com.example.cmart.app.dto.DriverLoginRequestDTO;
 import com.example.cmart.app.dto.DriverRegisterDTO;
 import com.example.cmart.app.dto.DriverResponseDTO;
-import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.entity.CarEntity;
 import com.example.cmart.app.entity.DriverEntity;
-import com.example.cmart.app.service.BookingService;
 import com.example.cmart.app.service.CarService;
 import com.example.cmart.app.service.DriverService;
 import com.example.cmart.app.service.JwtTokenService;
@@ -49,9 +44,6 @@ public class DriverAPI {
 	
 	@Autowired
 	private AuthenticationManager authManager;
-	
-	@Autowired
-	private BookingService bookingService;
 	
 	@Autowired
 	private JwtTokenService jwtService;
@@ -176,30 +168,5 @@ public class DriverAPI {
 			
 		return ResponseEntity.ok(driverResponse);
 	}
-	
-	@GetMapping("/driver/booking")
-	public ResponseEntity<?> getBooking(HttpServletRequest request){
-		try {
-			String driverPhone = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
-			DriverEntity driver = driverService.findByPhoneNumber(driverPhone).orElse(null);
-			if(driver != null) {
-				List<BookingEntity> bookings = bookingService.findByDriverId(driver.getId());
-				List<DriverBookingResponseDTO> response = new ArrayList<>();
-				
-				for(BookingEntity booking : bookings) {
-					DriverBookingResponseDTO dto = driverConvert.toDTOBooking(booking);
-					response.add(dto);
-				}
-				
-				return ResponseEntity.ok(response);
-			}else {
-				Map<String, String> mess = new HashMap<>();
-				mess.put("warning", "Driver not found");
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mess);
-			}
-		}catch(Exception ex) {
-			System.out.println(ex.toString());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
-	}
+	 
 }

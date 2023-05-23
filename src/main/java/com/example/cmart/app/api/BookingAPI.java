@@ -26,6 +26,7 @@ import com.example.cmart.app.converter.RatingConverter;
 import com.example.cmart.app.dto.BookingDTO;
 import com.example.cmart.app.dto.BookingRequestDTO;
 import com.example.cmart.app.dto.CarDTO;
+import com.example.cmart.app.dto.DriverBookingResponseDTO;
 import com.example.cmart.app.dto.DriverDTO;
 import com.example.cmart.app.dto.HistoryToPlacesDTO;
 import com.example.cmart.app.dto.RatingRequestDTO;
@@ -89,7 +90,7 @@ public class BookingAPI {
 	}
 	
 	/**
-	 * thuc hien chon va dat xe
+	 * khi khách hàng thuc hien chon va dat xe
 	 * @param requestDTO
 	 * @return
 	 */
@@ -127,7 +128,7 @@ public class BookingAPI {
 				
 				return ResponseEntity.ok(bookingDTO);
 			}else {
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 			}
 		}catch(Exception ex) {
 			//return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -161,7 +162,7 @@ public class BookingAPI {
 	
 	
 	/**
-	 * huy dat xe
+	 * khách hàng huy dat xe
 	 * @param id
 	 * @return
 	 */
@@ -186,7 +187,7 @@ public class BookingAPI {
 	}
 	
 	/**
-	 * xem lich su book xe
+	 * khách hàng xem lich su book xe
 	 * @return danh sach cac chuyen di da book
 	 */
 	
@@ -214,7 +215,7 @@ public class BookingAPI {
 	}
 	
 	/**
-	 * xoa lich su dat xe
+	 * khách hàng xoa lich su dat xe
 	 * chỉ cho phép xóa các với trạng thái finish hoặc cancel
 	 * @param id
 	 */
@@ -225,7 +226,7 @@ public class BookingAPI {
 	}
 	
 	/**
-	 * thuc hien danh gia
+	 * khách hàng thuc hien danh gia
 	 * @param id
 	 * @param ratingRequest
 	 * @return
@@ -248,22 +249,66 @@ public class BookingAPI {
 		 
 	}
 	
-	/*
-	@GetMapping("/booking")
-	public ResponseDTO getDriver(@RequestBody BookingRequestDTO request){
-		List<DriverEntity> drivers = driverService.getDrivers(AppConstants.RATING_ONE_STAR, DriverStatus.waitting);
-		List<DriverEntity> bookingDriver = new ArrayList<DriverEntity>();
-		for(DriverEntity entity : drivers) {
-			if(convert.getDistance(request.getStartLat(), 
-					request.getStartLng(), 
-					entity.getCurrentLocationLat(), 
-					entity.getCurrentLocationLng()) <= AppConstants.DEFAULT_RADIUS_LOCATION) { //500m
-				bookingDriver.add(entity);
+	/*==================================DRIVER======================*/
+	
+	/**
+	 * lái xe lấy thông tin đặt xe
+	 * @param request
+	 * @return thông tin tiếp nhận khách hàng đã đặt xe
+	 */
+	@GetMapping("/driver/booking")
+	public ResponseEntity<?> getBooking(HttpServletRequest request){
+		try {
+			String driverPhone = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+			DriverEntity driver = driverService.findByPhoneNumber(driverPhone).orElse(null);
+			if(driver != null) {
+				List<BookingEntity> bookings = bookingService.findByDriverId(driver.getId());
+				List<DriverBookingResponseDTO> response = new ArrayList<>();
+				
+				for(BookingEntity booking : bookings) {
+					DriverBookingResponseDTO dto = driverConvert.toDTOBooking(booking);
+					response.add(dto);
+				}
+				
+				return ResponseEntity.ok(response);
+			}else {
+				Map<String, String> mess = new HashMap<>();
+				mess.put("warning", "Driver not found");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mess);
 			}
+		}catch(Exception ex) {
+			System.out.println(ex.toString());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
-		ResponseDTO response = new ResponseDTO();
-		response.setListDriver(bookingDriver);
-		return response;
 	}
-	*/
+	
+	/**
+	 * lái xe thực hiện xác nhận đón khách và bắt đầu di chuyển
+	 * @param booking id
+	 * @return
+	 */
+	@PostMapping("/driver/booking/{id}")
+	public ResponseEntity<?> active(
+			@PathVariable Long id,
+			HttpServletRequest request){
+		System.out.println("get param id : " + id);
+		String driverPhone = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+		DriverEntity driver = driverService.findByPhoneNumber(driverPhone).orElse(null);
+		if(driver != null) {
+			BookingEntity booking = bookingService.findById(id).get();
+			booking.setStartTime(dateTimeConvert.nowString());
+			booking = bookingService.save(booking);
+			
+			driver.setStatus(DriverStatus.pick_up);
+			driver = driverService.save(driver);
+			
+			DriverBookingResponseDTO dto = driverConvert.toDTOBooking(booking);
+			
+			return ResponseEntity.ok(dto);
+		}else {
+			Map<String, String> mess = new HashMap<>();
+			mess.put("warning", "Driver not found");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mess);
+		}
+	}
 }

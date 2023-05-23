@@ -9,6 +9,7 @@ import com.example.cmart.app.dto.DriverRegisterDTO;
 import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.lib.Password;
+import com.example.cmart.app.util.BookingStatus;
 import com.example.cmart.app.util.Gender;
 
 @Component
@@ -58,6 +59,7 @@ public class DriverConverter {
 		dto.setEndLocationLng(booking.getEndLocationLng());
 		dto.setTotalFrice(booking.getTotalFare());
 		dto.setStartTime(booking.getStartTime());
+		dto.setStatus(BookingStatus.valueOf(booking.getStatus().name()).name());
 		return dto;
 	}
 	

@@ -9,6 +9,7 @@ public class DriverBookingResponseDTO {
 	private double startLocationLng;
 	private double endLocationLat;
 	private double endLocationLng;
+	private String status;
 	private float totalFrice;
 	private String startTime;
 	
@@ -65,6 +66,12 @@ public class DriverBookingResponseDTO {
 	}
 	public void setStartTime(String startTime) {
 		this.startTime = startTime;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 }

@@ -16,10 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.cmart.app.entity.BaseEntity;
 import com.example.cmart.app.entity.CustomerEntity;
 import com.example.cmart.app.entity.DriverEntity;
-import com.example.cmart.app.entity.RoleEntity;
 import com.example.cmart.app.service.JwtTokenService;
 import com.example.cmart.app.util.TypeUser;
 
