@@ -52,7 +52,7 @@ public class ScheduledRideService implements ImplScheduledRideService{
 			if(distance <= AppConstants.DEFAULT_RADIUS_LOCATION) { //500m
 				//float totalPrace = (float)(request.getDistanceTransfer() * entity.getCar().getCarPrice() + 
 				//		distance * entity.getCar().getCarPrice());
-				List<ScheduledRideEntity> scheduledRides = rideRepository.findByCarId(driverEntity.getCar().getId());
+				List<ScheduledRideEntity> scheduledRides = rideRepository.getByCarId(driverEntity.getCar().getId());
 				if(scheduledRides.size() == 0) {
 					System.out.println("size : " + scheduledRides.size());
 					float totalPrace = calPrace(distance, request.getDistanceTransfer(), 
@@ -122,6 +122,11 @@ public class ScheduledRideService implements ImplScheduledRideService{
 	}
 	
 	@Override
+	public List<ScheduledRideEntity> getByCarId(long id) {
+		return rideRepository.getByCarId(id);
+	}
+	
+	@Override
 	public Optional<ScheduledRideEntity> findByCustomerId(Long id, Long customerId) {
 		return rideRepository.findByCustomerId(id, customerId);
 	}
@@ -132,8 +137,8 @@ public class ScheduledRideService implements ImplScheduledRideService{
 	}
 	
 	@Override
-	public List<ScheduledRideEntity> findByCustomerId(long id) {
-		return rideRepository.findByCustomerId(id);
+	public List<ScheduledRideEntity> getByCustomerId(long id) {
+		return rideRepository.getByCustomerId(id);
 	}
 	
 	@Override

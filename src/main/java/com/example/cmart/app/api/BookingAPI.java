@@ -347,7 +347,7 @@ public class BookingAPI {
 	}
 	
 	/**
-	 * lái xe các nhận chọn hình thức thanh toán
+	 * lái xe xác nhận chọn hình thức thanh toán
 	 * @param id : booking id
 	 * @param paymentMethod
 	 * @param request

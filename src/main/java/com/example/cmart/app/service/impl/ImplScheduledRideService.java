@@ -11,7 +11,8 @@ public interface ImplScheduledRideService {
 
 	List<CarDTO> getCarsInRadius(BookingRequestDTO request);
 	
-	List<ScheduledRideEntity> findByCustomerId(long id);
+	List<ScheduledRideEntity> getByCustomerId(long id);
+	List<ScheduledRideEntity> getByCarId(long id);
 
 	Optional<ScheduledRideEntity> findById(Long id);
 	Optional<ScheduledRideEntity> findByCustomerId(Long id, Long customerId);

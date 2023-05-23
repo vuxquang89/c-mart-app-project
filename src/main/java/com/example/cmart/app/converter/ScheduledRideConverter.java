@@ -39,7 +39,7 @@ public class ScheduledRideConverter {
 		dto.setEndLocationLng(entity.getEndLocationLng());
 		dto.setEndAddress(entity.getEndAddress());
 		dto.setStartTime(entity.getStartTime());
-		dto.setTotalFare(entity.getTotalFare());
+		dto.setTotalFrice(entity.getTotalFare());
 		dto.setBookingTime(entity.getBookingTime());
 		dto.setDistance(entity.getDistance());
 		dto.setRideTime(entity.getRideTime());

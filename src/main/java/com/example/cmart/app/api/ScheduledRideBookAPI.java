@@ -1,15 +1,18 @@
 package com.example.cmart.app.api;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -79,7 +82,7 @@ public class ScheduledRideBookAPI {
 		if(driverService != null) {
 			CarEntity carEntity = driverEntity.getCar();
 			
-			if(rideService.findByCustomerId(customer.getId()).size() < 1) {
+			if(rideService.getByCustomerId(customer.getId()).size() < 1) {
 			
 				ScheduledRideEntity sRideEntity = sRideConvert.toEntity(requestDTO);
 				sRideEntity.setCar(carEntity);
@@ -114,7 +117,7 @@ public class ScheduledRideBookAPI {
 	 */
 	@PutMapping("/customer/scheduledride/booking/{id}")
 	public ResponseEntity<?> updateScheduledRideBook(@PathVariable("id") long id,
-			@RequestBody BookingRequestDTO requestDTO,
+			@RequestBody @Valid BookingRequestDTO requestDTO,
 			HttpServletRequest request){
 		
 		ScheduledRideEntity sRideEntity = rideService.findById(id).orElse(null);
@@ -168,6 +171,37 @@ public class ScheduledRideBookAPI {
 			}
 			
 		}catch(Exception ex) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+	}
+	
+	/**
+	 * lấy thông tin các chuyến xe book theo lịch của lái xe
+	 * @param request
+	 * @return
+	 */
+	@GetMapping("/driver/scheduledride/booking")
+	public ResponseEntity<?> getScheduledRide(
+			HttpServletRequest request){
+		try {
+			String driverPhone = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+			DriverEntity driver = driverService.findByPhoneNumber(driverPhone).orElse(null);
+			if(driver != null) {
+				List<ScheduledRideEntity> scheduledRides = rideService.getByCarId(driver.getCar().getId());
+				List<ScheduledRideDTO> scheduledRideDTOs = new ArrayList<ScheduledRideDTO>();
+				for(ScheduledRideEntity entity : scheduledRides) {
+					ScheduledRideDTO dto = sRideConvert.toDTO(entity);
+					scheduledRideDTOs.add(dto);
+				}
+				
+				return ResponseEntity.ok(scheduledRideDTOs);
+			}else {
+				Map<String, String> mess = new HashMap<>();
+				mess.put("warning", "Driver not found");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mess);
+			}
+		}catch(Exception ex) {
+			System.out.println(ex.toString());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 	}

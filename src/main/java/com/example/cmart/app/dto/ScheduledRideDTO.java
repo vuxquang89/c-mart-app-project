@@ -1,10 +1,5 @@
 package com.example.cmart.app.dto;
 
-import java.util.Date;
-
-import com.example.cmart.app.entity.CarEntity;
-import com.example.cmart.app.entity.CustomerEntity;
-
 public class ScheduledRideDTO {
 
 	private Long id;
@@ -25,7 +20,7 @@ public class ScheduledRideDTO {
 	
 	private String startTime; //thoi gian bat dau don 
 	
-	private float totalFare;
+	private float totalFrice;
 	
 	private String bookingTime;
 	
@@ -106,12 +101,12 @@ public class ScheduledRideDTO {
 		this.startTime = startTime;
 	}
 
-	public float getTotalFare() {
-		return totalFare;
+	public float getTotalFrice() {
+		return totalFrice;
 	}
 
-	public void setTotalFare(float totalFare) {
-		this.totalFare = totalFare;
+	public void setTotalFrice(float totalFrice) {
+		this.totalFrice = totalFrice;
 	}
 
 	public String getBookingTime() {
