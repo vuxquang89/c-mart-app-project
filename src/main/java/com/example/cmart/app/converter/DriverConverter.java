@@ -59,6 +59,7 @@ public class DriverConverter {
 		dto.setEndLocationLng(booking.getEndLocationLng());
 		dto.setTotalFrice(booking.getTotalFare());
 		dto.setStartTime(booking.getStartTime());
+		dto.setEndTime(booking.getEndTime());
 		dto.setStatus(BookingStatus.valueOf(booking.getStatus().name()).name());
 		return dto;
 	}

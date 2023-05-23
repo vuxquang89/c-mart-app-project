@@ -291,7 +291,7 @@ public class BookingAPI {
 	public ResponseEntity<?> active(
 			@PathVariable Long id,
 			HttpServletRequest request){
-		System.out.println("get param id : " + id);
+		
 		String driverPhone = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
 		DriverEntity driver = driverService.findByPhoneNumber(driverPhone).orElse(null);
 		if(driver != null) {
@@ -310,5 +310,33 @@ public class BookingAPI {
 			mess.put("warning", "Driver not found");
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mess);
 		}
+	}
+	
+	/**
+	 * lái xe xác nhận kết thúc chuyến đi
+	 * @param id mã đặt xe
+	 * @param request
+	 * @return
+	 */
+	@PutMapping("/driver/booking/{id}/finish")
+	public ResponseEntity<?> actionFinish(
+			@PathVariable Long id,
+			HttpServletRequest request){
+		String driverPhone = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+		DriverEntity driver = driverService.findByPhoneNumber(driverPhone).orElse(null);
+		if(driver != null){
+			BookingEntity booking = bookingService.findById(id).get();
+			booking.setEndTime(dateTimeConvert.nowString());
+			booking.setStatus(BookingStatus.finish);
+			booking = bookingService.save(booking);
+			
+			driver.setStatus(DriverStatus.waitting);
+			driver = driverService.save(driver);
+			
+			DriverBookingResponseDTO dto = driverConvert.toDTOBooking(booking);
+			
+			return ResponseEntity.ok(dto);
+		}
+		return null;
 	}
 }

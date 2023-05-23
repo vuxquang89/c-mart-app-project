@@ -19,7 +19,6 @@ import com.example.cmart.app.dto.PaymentInfoDTO;
 import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.service.BookingService;
 import com.example.cmart.app.service.VNPayService;
-import com.example.cmart.app.util.BookingStatus;
 import com.example.cmart.app.util.PaymentMethod;
 
 @RestController

@@ -12,6 +12,7 @@ public class DriverBookingResponseDTO {
 	private String status;
 	private float totalFrice;
 	private String startTime;
+	private String endTime;
 	
 	public Long getId() {
 		return id;
@@ -73,5 +74,12 @@ public class DriverBookingResponseDTO {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public String getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+	
 	
 }
