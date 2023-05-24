@@ -132,6 +132,11 @@ public class ScheduledRideService implements ImplScheduledRideService{
 	}
 	
 	@Override
+	public boolean checkRepeat(Long id) {
+		return rideRepository.checkRepeat(id);
+	}
+	
+	@Override
 	public void delete(ScheduledRideEntity entity) {
 		rideRepository.delete(entity);
 	}

@@ -1,6 +1,5 @@
 package com.example.cmart.app.dto;
 
-import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -27,6 +26,9 @@ public class BookingRequestDTO extends AbstractDTO<BookingRequestDTO>{
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private String startTime;
 	private int rideTime;//thoi gian di chuyen du kien (seconds)
+	
+	private int datePlus;
+	private boolean repeat;
 	
 	private CarDTO car;
 	
@@ -92,6 +94,17 @@ public class BookingRequestDTO extends AbstractDTO<BookingRequestDTO>{
 	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
-	
+	public int getDatePlus() {
+		return datePlus;
+	}
+	public void setDatePlus(int datePlus) {
+		this.datePlus = datePlus;
+	}
+	public boolean getRepeat() {
+		return repeat;
+	}
+	public void setRepeat(boolean repeat) {
+		this.repeat = repeat;
+	}
 	
 }

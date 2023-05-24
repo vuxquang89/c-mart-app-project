@@ -13,6 +13,8 @@ public interface ImplScheduledRideService {
 	
 	List<ScheduledRideEntity> getByCustomerId(long id);
 	List<ScheduledRideEntity> getByCarId(long id);
+	
+	boolean checkRepeat(Long id);
 
 	Optional<ScheduledRideEntity> findById(Long id);
 	Optional<ScheduledRideEntity> findByCustomerId(Long id, Long customerId);

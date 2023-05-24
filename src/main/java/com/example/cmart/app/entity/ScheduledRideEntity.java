@@ -1,6 +1,5 @@
 package com.example.cmart.app.entity;
 
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -53,7 +52,13 @@ public class ScheduledRideEntity extends BaseEntity{
 	
 	@Column(name = "ride_time")
 	private int rideTime;//thoi gian cho quang đường dự kiến đi xe (seconds)
-
+	
+	@Column(name = "date_plus")
+	private int datePlus;
+	
+	@Column(name = "repeat_scheduledride")
+	private boolean repeatScheduledRide = false;//
+	
 	public CustomerEntity getCustomer() {
 		return customer;
 	}
@@ -157,7 +162,21 @@ public class ScheduledRideEntity extends BaseEntity{
 	public void setRideTime(int rideTime) {
 		this.rideTime = rideTime;
 	}
-	
-	
-	
+
+	public int getDatePlus() {
+		return datePlus;
+	}
+
+	public void setDatePlus(int datePlus) {
+		this.datePlus = datePlus;
+	}
+
+	public boolean getRepeatScheduledRide() {
+		return repeatScheduledRide;
+	}
+
+	public void setRepeatScheduledRide(boolean repeatScheduledRide) {
+		this.repeatScheduledRide = repeatScheduledRide;
+	}
+
 }

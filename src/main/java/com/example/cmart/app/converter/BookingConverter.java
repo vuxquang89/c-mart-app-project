@@ -18,7 +18,7 @@ public class BookingConverter {
 		entity.setStartAddress(requestDTO.getStartAddress());
 		entity.setEndLocationLat(requestDTO.getEndLat());
 		entity.setEndLocationLng(requestDTO.getEndLng());
-		System.out.println(requestDTO.getEndAddress());
+		
 		entity.setEndAddress(requestDTO.getEndAddress());
 		//entity.setStatus(BookingStatus.waitting);
 		//entity.setBookingTime(new Date());

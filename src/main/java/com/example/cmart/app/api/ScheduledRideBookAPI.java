@@ -21,19 +21,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cmart.app.converter.DateTimeConverter;
+import com.example.cmart.app.converter.DriverConverter;
 import com.example.cmart.app.converter.ScheduledRideConverter;
 import com.example.cmart.app.dto.BookingRequestDTO;
 import com.example.cmart.app.dto.CarDTO;
+import com.example.cmart.app.dto.DriverBookingResponseDTO;
 import com.example.cmart.app.dto.ResponseDTO;
 import com.example.cmart.app.dto.ScheduledRideDTO;
+import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.entity.CarEntity;
 import com.example.cmart.app.entity.CustomerEntity;
 import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.entity.ScheduledRideEntity;
+import com.example.cmart.app.service.BookingService;
 import com.example.cmart.app.service.CustomerService;
 import com.example.cmart.app.service.DriverService;
 import com.example.cmart.app.service.JwtTokenService;
 import com.example.cmart.app.service.ScheduledRideService;
+import com.example.cmart.app.util.BookingStatus;
+import com.example.cmart.app.util.DriverStatus;
 
 @RestController
 @RequestMapping("/api")
@@ -49,10 +55,16 @@ public class ScheduledRideBookAPI {
 	private DriverService driverService;
 	
 	@Autowired
+	private DriverConverter driverConvert;
+	
+	@Autowired
 	private CustomerService customerService;
 	
 	@Autowired
 	private JwtTokenService jwtService;
+	
+	@Autowired
+	private BookingService bookingService;
 	
 	@Autowired
 	private DateTimeConverter dateTimeConvert;
@@ -70,7 +82,7 @@ public class ScheduledRideBookAPI {
 	 * @return
 	 */
 	@PostMapping("/customer/scheduledride/booking")
-	public ResponseEntity<?> scheduledRideBook(@RequestBody BookingRequestDTO requestDTO,
+	public ResponseEntity<?> scheduledRideBook(@RequestBody @Valid BookingRequestDTO requestDTO,
 			HttpServletRequest request){
 		
 		DriverEntity driverEntity = driverService.findByCarId(requestDTO.getCar().getId()).orElse(null);
@@ -204,5 +216,60 @@ public class ScheduledRideBookAPI {
 			System.out.println(ex.toString());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
+	}
+	
+	/**
+	 * lái xe xác nhận đón khách theo lịch đã đặt
+	 * @param id
+	 * @param request
+	 * @return
+	 */
+	@PostMapping("/driver/scheduledride/booking/{id}")
+	public ResponseEntity<?> actionPickup(
+			@PathVariable long id,
+			HttpServletRequest request){
+		
+		String driverPhone = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
+		DriverEntity driver = driverService.findByPhoneNumber(driverPhone).orElse(null);
+		if(driver != null) {
+			ScheduledRideEntity scheduleRide = rideService.findById(id).orElse(null);
+			if(scheduleRide != null) {
+				long differenceMunites = dateTimeConvert.getDurationMunites(scheduleRide.getStartTime()); 
+				if(differenceMunites <= 15 && differenceMunites >= -15) {// <> 15 phut
+					BookingEntity booking = sRideConvert.toBookingEntity(scheduleRide);
+					booking.setStatus(BookingStatus.waitting);
+					booking.setStartTime(dateTimeConvert.nowString());
+					
+					driver.setStatus(DriverStatus.pick_up);
+					
+					driver = driverService.save(driver);
+					
+					booking = bookingService.save(booking);
+					//check repeat
+					if(rideService.checkRepeat(id)) {
+						
+						String newStartTime = dateTimeConvert.convertDateToRepeat(scheduleRide.getStartTime(), scheduleRide.getDatePlus());
+						scheduleRide.setStartTime(newStartTime);
+						rideService.save(scheduleRide);
+					}else {
+						rideService.delete(scheduleRide);
+					}
+					
+					DriverBookingResponseDTO dto = driverConvert.toDTOBooking(booking);
+					
+					return ResponseEntity.ok(dto);
+				}else {				
+					Map<String, String> mess = new HashMap<>();
+					mess.put("warning", "Processing time out");
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mess);
+				}
+			}
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}else {
+			Map<String, String> mess = new HashMap<>();
+			mess.put("warning", "Driver not found");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mess);
+		}
+		
 	}
 }

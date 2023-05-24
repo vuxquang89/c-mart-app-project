@@ -5,10 +5,30 @@ import org.springframework.stereotype.Component;
 import com.example.cmart.app.dto.BookingRequestDTO;
 import com.example.cmart.app.dto.CarDTO;
 import com.example.cmart.app.dto.ScheduledRideDTO;
+import com.example.cmart.app.entity.BookingEntity;
 import com.example.cmart.app.entity.ScheduledRideEntity;
 
 @Component
 public class ScheduledRideConverter {
+	
+	public BookingEntity toBookingEntity(ScheduledRideEntity rideEntity) {
+		BookingEntity entity = new BookingEntity();
+		entity.setStartLocationLat(rideEntity.getStartLocationLat());
+		entity.setStartLocationLng(rideEntity.getStartLocationLng());
+		entity.setStartAddress(rideEntity.getStartAddress());
+		entity.setEndLocationLat(rideEntity.getEndLocationLat());
+		entity.setEndLocationLng(rideEntity.getEndLocationLng());
+		
+		entity.setEndAddress(rideEntity.getEndAddress());
+		//entity.setStatus(BookingStatus.waitting);
+		entity.setBookingTime(rideEntity.getBookingTime());
+		entity.setDistance(rideEntity.getDistance());
+		entity.setTotalFare(rideEntity.getTotalFare());
+		entity.setCar(rideEntity.getCar());
+		entity.setCustomer(rideEntity.getCustomer());
+		return entity;
+	}
+	
 
 	public ScheduledRideEntity toEntity(BookingRequestDTO request) {
 		ScheduledRideEntity entity = new ScheduledRideEntity();
@@ -24,6 +44,8 @@ public class ScheduledRideConverter {
 		//entity.setBookingTime(new Date());
 		entity.setDistance(request.getDistanceTransfer());
 		entity.setRideTime(request.getRideTime());
+		entity.setDatePlus(request.getDatePlus());
+		entity.setRepeatScheduledRide(request.getRepeat());
 		return entity;
 	}
 	
