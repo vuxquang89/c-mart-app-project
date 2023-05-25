@@ -12,7 +12,6 @@ import com.example.cmart.app.converter.DistanceConverter;
 import com.example.cmart.app.converter.DriverConverter;
 import com.example.cmart.app.dto.BookingRequestDTO;
 import com.example.cmart.app.dto.CarDTO;
-import com.example.cmart.app.entity.CarEntity;
 import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.entity.ScheduledRideEntity;
 import com.example.cmart.app.repository.ScheduledRideRepository;
@@ -55,7 +54,7 @@ public class ScheduledRideService implements ImplScheduledRideService{
 				List<ScheduledRideEntity> scheduledRides = rideRepository.getByCarId(driverEntity.getCar().getId());
 				if(scheduledRides.size() == 0) {
 					System.out.println("size : " + scheduledRides.size());
-					float totalPrace = calPrace(distance, request.getDistanceTransfer(), 
+					float totalPrace = distanceConvert.calPrace(distance, request.getDistanceTransfer(), 
 							driverEntity.getCar().getCarPrice());
 					
 					CarDTO carDTO = driverConvert.toCarDTO(driverEntity);
@@ -106,7 +105,7 @@ public class ScheduledRideService implements ImplScheduledRideService{
 						if(check) {
 							//float totalPrace = (float)(request.getDistanceTransfer() * entity.getCar().getCarPrice() + 
 							//		distance * entity.getCar().getCarPrice());
-							float totalPrace = calPrace(distance, request.getDistanceTransfer(), 
+							float totalPrace = distanceConvert.calPrace(distance, request.getDistanceTransfer(), 
 									driverEntity.getCar().getCarPrice());
 							
 							CarDTO carDTO = driverConvert.toCarDTO(driverEntity);
@@ -156,6 +155,7 @@ public class ScheduledRideService implements ImplScheduledRideService{
 		return rideRepository.findById(id);
 	}
 	
+	/*
 	public float calPrace(double distance, float distanceTransfer, float carPrice) {
 		return (float)(((int)distanceTransfer + (int)distance) * carPrice);
 	}
@@ -172,4 +172,5 @@ public class ScheduledRideService implements ImplScheduledRideService{
 		double distance = getDistance(startLat, startLng, currentLat, currentLng);
 		return calPrace(distance, distanceTransfer, car.getCarPrice());
 	}
+	*/
 }

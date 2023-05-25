@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cmart.app.converter.DateTimeConverter;
+import com.example.cmart.app.converter.DistanceConverter;
 import com.example.cmart.app.converter.DriverConverter;
 import com.example.cmart.app.converter.ScheduledRideConverter;
 import com.example.cmart.app.dto.BookingRequestDTO;
@@ -56,6 +57,9 @@ public class ScheduledRideBookAPI {
 	
 	@Autowired
 	private DriverConverter driverConvert;
+	
+	@Autowired
+	private DistanceConverter distanceConvert;
 	
 	@Autowired
 	private CustomerService customerService;
@@ -100,7 +104,7 @@ public class ScheduledRideBookAPI {
 				sRideEntity.setCar(carEntity);
 				sRideEntity.setCustomer(customer);
 				sRideEntity.setBookingTime(dateTimeConvert.nowString());
-				sRideEntity.setTotalFare(rideService.calTotalPrace(requestDTO.getStartLat(), 
+				sRideEntity.setTotalFare(distanceConvert.calTotalPrace(requestDTO.getStartLat(), 
 						requestDTO.getStartLng(), 
 						driverEntity.getCurrentLocationLat(), 
 						driverEntity.getCurrentLocationLng(), 
@@ -142,7 +146,7 @@ public class ScheduledRideBookAPI {
 			sRideEntity.setEndLocationLng(requestDTO.getEndLng());
 			sRideEntity.setRideTime(requestDTO.getRideTime());
 			sRideEntity.setDistance(requestDTO.getDistanceTransfer());
-			sRideEntity.setTotalFare(rideService.calTotalPrace(requestDTO.getStartLat(), 
+			sRideEntity.setTotalFare(distanceConvert.calTotalPrace(requestDTO.getStartLat(), 
 					requestDTO.getStartLng(), 
 					driver.getCurrentLocationLat(), 
 					driver.getCurrentLocationLng(), 
@@ -235,7 +239,7 @@ public class ScheduledRideBookAPI {
 			ScheduledRideEntity scheduleRide = rideService.findById(id).orElse(null);
 			if(scheduleRide != null) {
 				long differenceMunites = dateTimeConvert.getDurationMunites(scheduleRide.getStartTime()); 
-				if(differenceMunites <= 15 && differenceMunites >= -15) {// <> 15 phut
+				if(differenceMunites <= 15 && differenceMunites >= -15) {// <> +/-15 phut
 					BookingEntity booking = sRideConvert.toBookingEntity(scheduleRide);
 					booking.setStatus(BookingStatus.waitting);
 					booking.setStartTime(dateTimeConvert.nowString());

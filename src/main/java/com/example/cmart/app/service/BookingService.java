@@ -12,7 +12,6 @@ import com.example.cmart.app.converter.DriverConverter;
 import com.example.cmart.app.dto.BookingRequestDTO;
 import com.example.cmart.app.dto.CarDTO;
 import com.example.cmart.app.entity.BookingEntity;
-import com.example.cmart.app.entity.CarEntity;
 import com.example.cmart.app.entity.CustomerEntity;
 import com.example.cmart.app.entity.DriverEntity;
 import com.example.cmart.app.repository.BookingRepository;
@@ -42,7 +41,7 @@ public class BookingService implements ImplBookingService{
 		List<CarDTO> listBookingCar = new ArrayList<CarDTO>();
 		double distance = 0;
 		for(DriverEntity entity : drivers) {
-			distance = getDistance(request.getStartLat(), 
+			distance = distanceConvert.getDistance(request.getStartLat(), 
 					request.getStartLng(), 
 					entity.getCurrentLocationLat(), 
 					entity.getCurrentLocationLng());
@@ -50,7 +49,7 @@ public class BookingService implements ImplBookingService{
 			if(distance <= AppConstants.DEFAULT_RADIUS_LOCATION) { //500m
 				//float totalPrace = (float)(request.getDistanceTransfer() * entity.getCar().getCarPrice() + 
 				//		distance * entity.getCar().getCarPrice());
-				float totalPrace = calPrace(distance, request.getDistanceTransfer(), entity.getCar().getCarPrice());
+				float totalPrace = distanceConvert.calPrace(distance, request.getDistanceTransfer(), entity.getCar().getCarPrice());
 				
 				CarDTO carDTO = driverConvert.toCarDTO(entity);
 				carDTO.setTotalPrace(totalPrace);
@@ -106,7 +105,7 @@ public class BookingService implements ImplBookingService{
 	public void delete(long id) {
 		bookingRepository.deleteBookingById(id);
 	}
-	
+	/*
 	public double getDistance(double startLat, double startLng, double currentLat, double currentLng) {
 		return distanceConvert.getDistance(startLat, 
 				startLng, 
@@ -123,4 +122,5 @@ public class BookingService implements ImplBookingService{
 		double distance = getDistance(startLat, startLng, currentLat, currentLng);
 		return calPrace(distance, distanceTransfer, car.getCarPrice());
 	}
+	*/
 }

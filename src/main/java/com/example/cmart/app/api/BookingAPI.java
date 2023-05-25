@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.cmart.app.converter.BookingConverter;
 import com.example.cmart.app.converter.DateTimeConverter;
+import com.example.cmart.app.converter.DistanceConverter;
 import com.example.cmart.app.converter.DriverConverter;
 import com.example.cmart.app.converter.RatingConverter;
 import com.example.cmart.app.dto.BookingDTO;
@@ -64,6 +65,9 @@ public class BookingAPI {
 	
 	@Autowired
 	private BookingConverter bookingConvert;
+	
+	@Autowired
+	private DistanceConverter distanceConvert;
 	
 	@Autowired
 	private DriverService driverService;
@@ -115,7 +119,7 @@ public class BookingAPI {
 				bookingEntity.setBookingTime(dateTimeConvert.nowString());
 				bookingEntity.setCustomer(customer);
 				
-				float totalPrace = bookingService.calTotalPrace(requestDTO.getStartLat(),
+				float totalPrace = distanceConvert.calTotalPrace(requestDTO.getStartLat(),
 						requestDTO.getStartLng(), driverEntity.getCurrentLocationLat(),
 						driverEntity.getCurrentLocationLng(), requestDTO.getDistanceTransfer(), carEntity);
 				

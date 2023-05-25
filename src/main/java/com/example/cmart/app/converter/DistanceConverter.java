@@ -2,6 +2,8 @@ package com.example.cmart.app.converter;
 
 import org.springframework.stereotype.Component;
 
+import com.example.cmart.app.entity.CarEntity;
+
 @Component
 public class DistanceConverter {
 
@@ -49,4 +51,27 @@ public class DistanceConverter {
 		return R * c; // returns the distance in meter
 		
 	}
+	/*
+	public double getDistance(double startLat, double startLng, double currentLat, double currentLng) {
+		return distanceConvert.getDistance(startLat, 
+				startLng, 
+				currentLat, 
+				currentLng);
+	}
+	*/
+	
+
+	public float calTotalPrace(double startLat, double startLng, double currentLat, double currentLng,
+			float distanceTransfer, CarEntity car) {
+		double distance = getDistance(startLat, startLng, currentLat, currentLng);
+		return calPrace(distance, distanceTransfer, car.getCarPrice());
+	}
+	
+	public float calPrace(double distance, float distanceTransfer, float carPrice) {
+		int totalPrice = (int)((distanceTransfer + distance) * carPrice)/100;
+		float price = totalPrice / 1000;
+		price = Math.round(price * 10) / 10;
+		return price * 1000;
+	}
+	
 }
