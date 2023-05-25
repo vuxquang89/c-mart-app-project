@@ -19,4 +19,8 @@ public class WSService {
 	public void notifyFrontend(String to, MessageDTO message) {
 		messageTemplate.convertAndSend("/topic/messages/" + to, message);
 	}
+	
+	public void sendMessage(MessageDTO message) {
+		messageTemplate.convertAndSendToUser(message.getReceiverName(),"/private",message);
+	}
 }

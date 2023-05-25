@@ -1,29 +1,43 @@
 package com.example.cmart.app.dto;
 
-import java.time.LocalDateTime;
+import com.example.cmart.app.util.Status;
 
 public class MessageDTO {
 
-	private String message;
-	private String fromLogin;
-	private LocalDateTime createDate;
+	private String senderName;
+    private String receiverName;
+    private String message;
+    private String date;
+    private Status status;
+	public String getSenderName() {
+		return senderName;
+	}
+	public void setSenderName(String senderName) {
+		this.senderName = senderName;
+	}
+	public String getReceiverName() {
+		return receiverName;
+	}
+	public void setReceiverName(String receiverName) {
+		this.receiverName = receiverName;
+	}
 	public String getMessage() {
 		return message;
 	}
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public String getFromLogin() {
-		return fromLogin;
+	public String getDate() {
+		return date;
 	}
-	public void setFromLogin(String fromLogin) {
-		this.fromLogin = fromLogin;
+	public void setDate(String date) {
+		this.date = date;
 	}
-	public LocalDateTime getCreateDate() {
-		return createDate;
+	public Status getStatus() {
+		return status;
 	}
-	public void setCreateDate(LocalDateTime createDate) {
-		this.createDate = createDate;
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 	
 }

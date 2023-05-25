@@ -10,16 +10,19 @@ public class ChatMessageConverter {
 
 	public ChatMessageEntity toEntity(MessageDTO dto) {
 		ChatMessageEntity entity = new ChatMessageEntity();
-		entity.setFromLogin(dto.getFromLogin());
+		entity.setUsername(dto.getSenderName());
+		entity.setFromLogin(dto.getReceiverName());
 		entity.setMessage(dto.getMessage());
+		entity.setCreateDate(dto.getDate());
 		return entity;
 	}
 	
 	public MessageDTO toDTO(ChatMessageEntity entity) {
 		MessageDTO dto = new MessageDTO();
-		dto.setFromLogin(entity.getFromLogin());
+		dto.setSenderName(entity.getFromLogin());
 		dto.setMessage(entity.getMessage());
-		dto.setCreateDate(entity.getCreateDate());
+		dto.setReceiverName(entity.getUsername());
+		dto.setDate(entity.getCreateDate());
 		return dto;
 	}
 }

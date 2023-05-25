@@ -1,6 +1,5 @@
 package com.example.cmart.app.entity;
 
-import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,8 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @Table(name = "chat_message")
@@ -28,8 +25,8 @@ public class ChatMessageEntity {
 	private String fromLogin;
 	
 	@Column(name = "create_date")
-	@CreatedDate
-	private LocalDateTime createDate;
+	//@CreatedDate
+	private String createDate;
 
 	public Long getId() {
 		return id;
@@ -63,11 +60,11 @@ public class ChatMessageEntity {
 		this.fromLogin = fromLogin;
 	}
 
-	public LocalDateTime getCreateDate() {
+	public String getCreateDate() {
 		return createDate;
 	}
 
-	public void setCreateDate(LocalDateTime createDate) {
+	public void setCreateDate(String createDate) {
 		this.createDate = createDate;
 	}
 	

@@ -94,7 +94,7 @@ public class SecurityConfig {
 		);
 		
 		http.authorizeRequests()
-				.antMatchers("/", "/api/customer/login/**", 
+				.antMatchers("/","/chat/**", "/api/customer/login/**", 
 						"/api/customer/token/refresh/**", 
 						"/api/customer/register/**",
 						"/api/customer/vnpay-payment/**"
