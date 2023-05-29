@@ -13,8 +13,8 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessageEntity, 
 
 	@Transactional	
 	@Query(value = "SELECT * FROM chat_message c "
-			+ "WHERE c.username = ?1 "
-			+ "ORDER BY c.createDate ASC",
+			+ "WHERE c.username = ?1 or c.to_user = ?1 "
+			+ "ORDER BY c.create_date ASC",
 			nativeQuery = true)
 	Page<ChatMessageEntity> findAllMessageUsername(String username, Pageable pageable);
 }

@@ -2,7 +2,10 @@ package com.example.cmart.app.api;
 
 
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,7 +33,8 @@ import com.example.cmart.app.service.JwtTokenService;
 import com.example.cmart.app.service.WSService;
 
 @RestController
-@CrossOrigin
+//@CrossOrigin
+//@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class MessageControllerAPI {
 	@Autowired
 	private WSService wsService;
@@ -63,22 +67,25 @@ public class MessageControllerAPI {
         wsService.sendMessage(message);
         ChatMessageEntity chatMessageEntity = messageConvert.toEntity(message);
 		//chatMessageEntity.setUsername(message.getSenderName());
-		chatMessageEntity.setCreateDate(dateTimeConvert.nowString());
+		chatMessageEntity.setCreateDate(dateTimeConvert.parseLocalDateTime(dateTimeConvert.nowString()));
+		chatMessageEntity.setRoomUser("C-Mart - " + message.getSenderName());
 		chatMessageService.save(chatMessageEntity);
 		//wsService.notifyFrontend(to, message);
         return message;
     }
     
-    @GetMapping("/messages")
+    @GetMapping("/messages/customer")
 	public ResponseEntity<?> getMessages(
 			HttpServletRequest request) {
 		
     	String username = jwtService.getUserNameFromJwtSubject(jwtService.getToken(request));
 		CustomerEntity customer = customerService.findCustomerByEmail(username).get();
 		
-		Pageable pageable = PageRequest.of(0, 10);
+		Pageable pageable = PageRequest.of(0, 20);
 		List<MessageDTO> listMessages = chatMessageService.findAll(customer.getUsername(), pageable);
-		return new ResponseEntity<>(listMessages, HttpStatus.OK);
+		Map<String, Object> mess = new HashMap<String, Object>();
+		mess.put("body", listMessages);
+		return new ResponseEntity<>(mess, HttpStatus.OK);
 	}
     
 	/*

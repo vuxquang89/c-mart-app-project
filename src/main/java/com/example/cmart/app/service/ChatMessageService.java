@@ -12,6 +12,7 @@ import com.example.cmart.app.dto.MessageDTO;
 import com.example.cmart.app.entity.ChatMessageEntity;
 import com.example.cmart.app.repository.ChatMessageRepository;
 import com.example.cmart.app.service.impl.ImplChatMessageService;
+import com.example.cmart.app.util.Status;
 
 @Service
 public class ChatMessageService implements ImplChatMessageService{
@@ -34,6 +35,7 @@ public class ChatMessageService implements ImplChatMessageService{
 		
 		for(ChatMessageEntity message : messages) {
 			MessageDTO messDTO = messageConvert.toDTO(message);
+			messDTO.setStatus(Status.MESSAGE);
 			results.add(messDTO);
 		}
 		return results;

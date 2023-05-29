@@ -82,6 +82,7 @@ public class SecurityConfig {
 	
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+		http.cors();
 		http.csrf().disable();
 		//http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
@@ -94,7 +95,9 @@ public class SecurityConfig {
 		);
 		
 		http.authorizeRequests()
-				.antMatchers("/","/chat/**", "/api/customer/login/**", 
+				.antMatchers("/", "/chat/**"
+						).permitAll()
+				.antMatchers("/api/customer/login/**", 
 						"/api/customer/token/refresh/**", 
 						"/api/customer/register/**",
 						"/api/customer/vnpay-payment/**"

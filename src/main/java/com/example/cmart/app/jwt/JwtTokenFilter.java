@@ -32,6 +32,16 @@ public class JwtTokenFilter extends OncePerRequestFilter{
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		/*
+		HttpServletRequest req = (HttpServletRequest) request;
+	    HttpServletResponse res = (HttpServletResponse) response;
+
+	    res.setHeader("Access-Control-Allow-Origin", req.getHeader("Origin"));
+	    res.setHeader("Access-Control-Allow-Credentials", "true");
+	    res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+	    res.setHeader("Access-Control-Max-Age", "3600");
+	    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
+		*/
 		if(request.getServletPath().equals("/api/customer/login") || 
 				request.getServletPath().equals("/api/customer/token/refresh") ||
 				request.getServletPath().equals("/api/driver/login") || 
